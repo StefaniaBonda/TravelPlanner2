@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Sign In";
+}
+
+<div class="hero-section">
+    <h1>Sign In to TripTide</h1>
+
+    <!-- Verificăm dacă există erori în ModelState și le afișăm -->
+    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
+    {
+        <div class="alert alert-danger">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
+
+    <div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>
+
+    <form method="post" action="/Home/SignIn" class="styled-form">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sign In</button>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <p>Nu ai cont? <a href="@Url.Action("SignUp", "Home")">Înregistrează-te</a></p>
+        </div>
+    </form>
+</div>

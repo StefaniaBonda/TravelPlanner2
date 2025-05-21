@@ -1,0 +1,323 @@
+﻿@{
+    ViewBag.Title = "View Trip";
+}
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #locationsList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+            #locationsList li {
+                cursor: move;
+                padding: 10px;
+                margin: 5px 0;
+                border: 1px solid #ddd;
+                background-color: #f9f9f9;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                #locationsList li.dragging {
+                    opacity: 0.5;
+                }
+
+        .reorder-controls {
+            display: flex;
+            align-items: center;
+        }
+
+            .reorder-controls span {
+                cursor: move;
+                color: #888;
+            }
+
+        #saveOrderBtn {
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        #routeLine {
+            stroke: blue;
+            stroke-width: 3;
+            stroke-opacity: 0.6;
+        }
+    </style>
+}
+<h2>Your Trip Details</h2>
+<div id="tripSummary">
+    <p>Trip Locations: (Drag and drop to reorder)</p>
+    <ul id="locationsList"></ul>
+    <button id="saveOrderBtn" style="display:none;">Save Location Order</button>
+</div>
+<div id="tripMap" style="height: 500px; width: 100%;"></div>
+<div class="trip-actions" style="margin-top: 20px; text-align: center;">
+    <a href="/Trips/ContinueTrip" class="btn btn-primary">Add More Locations</a>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Create map centered on Romania
+            const tripMap = L.map('tripMap').setView([45.9432, 24.9668], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(tripMap);
+
+            // Elements
+            const locationsList = document.getElementById('locationsList');
+            const saveOrderBtn = document.getElementById('saveOrderBtn');
+
+            // Variables to store state
+            let locations = [];
+            let markers = [];
+            let routeLine = null;
+
+            // Fetch trip locations
+            fetch('/Trips/GetTripLocations')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(fetchedLocations => {
+                    console.log("Fetched locations:", fetchedLocations);
+
+                    // Store locations
+                    locations = fetchedLocations;
+
+                    if (locations.length === 0) {
+                        locationsList.innerHTML = '<li>No locations added to this trip yet.</li>';
+                        return;
+                    }
+
+                    // Clear any existing items
+                    locationsList.innerHTML = '';
+
+                    // Add markers and create list items
+                    const bounds = [];
+
+                    locations.forEach((location, index) => {
+                        if (!location.Latitude || !location.Longitude) {
+                            console.error('Invalid location data:', location);
+                            return;
+                        }
+
+                        // Create marker
+                        const marker = L.marker([location.Latitude, location.Longitude])
+                            .addTo(tripMap)
+                            .bindPopup(`
+                                    <strong>${location.Type}</strong>: ${location.Name}<br>
+                                    City: ${location.City}, Country: ${location.Country}<br>
+                                    Description: ${location.Description || 'No description'}
+                                `);
+
+                        // Store markers for later
+                        markers.push(marker);
+
+                        // Create list item
+                        const li = document.createElement('li');
+                        li.setAttribute('draggable', 'true');
+                        li.dataset.index = index;
+                        li.innerHTML = `
+                                <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
+                                <div class="reorder-controls">
+                                    <span>&#9776;</span>
+                                </div>
+                            `;
+
+                        // Add drag and drop event listeners
+                        li.addEventListener('dragstart', handleDragStart);
+                        li.addEventListener('dragover', handleDragOver);
+                        li.addEventListener('drop', handleDrop);
+                        li.addEventListener('dragenter', handleDragEnter);
+                        li.addEventListener('dragleave', handleDragLeave);
+                        li.addEventListener('dragend', handleDragEnd);
+
+                        // Add to list
+                        locationsList.appendChild(li);
+
+                        // Add to bounds
+                        bounds.push([location.Latitude, location.Longitude]);
+                    });
+
+                    // Draw route line connecting all locations in order
+                    drawRouteLine();
+
+                    // Fit map to show all locations
+                    if (bounds.length > 0) {
+                        tripMap.fitBounds(bounds, { padding: [50, 50] });
+                    }
+
+                    // Show save button if multiple locations
+                    if (locations.length > 1) {
+                        saveOrderBtn.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching trip locations:', error);
+                    locationsList.innerHTML = '<li style="color:red">Error loading locations. Please try refreshing the page.</li>';
+                });
+
+            // Draw route line connecting locations in order
+            function drawRouteLine() {
+                // Remove existing line if any
+                if (routeLine) {
+                    tripMap.removeLayer(routeLine);
+                }
+
+                // Create line coordinates
+                const routePoints = locations.map(loc => [loc.Latitude, loc.Longitude]);
+
+                if (routePoints.length >= 2) {
+                    routeLine = L.polyline(routePoints, {
+                        color: 'blue',
+                        weight: 3,
+                        opacity: 0.6,
+                        dashArray: '10, 10',
+                        id: 'routeLine'
+                    }).addTo(tripMap);
+                }
+            }
+
+            // Update list numbering
+            function updateListNumbering() {
+                Array.from(locationsList.children).forEach((li, idx) => {
+                    const span = li.querySelector('span');
+                    if (span) {
+                        const text = span.textContent;
+                        span.textContent = text.replace(/^\d+\./, `${idx + 1}.`);
+                    }
+                    li.dataset.index = idx;
+                });
+            }
+
+            // Drag and drop variables
+            let draggedItem = null;
+            let draggedIdx = null;
+
+            // Drag and drop event handlers
+            function handleDragStart(e) {
+                draggedItem = this;
+                draggedIdx = parseInt(this.dataset.index);
+
+                // Set drag data
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+
+                // Style
+                setTimeout(() => this.classList.add('dragging'), 0);
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDragEnter(e) {
+                this.classList.add('over');
+            }
+
+            function handleDragLeave(e) {
+                this.classList.remove('over');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+
+                // Only proceed if dropping on a different item
+                if (draggedItem !== this) {
+                    // Get target index
+                    const targetIdx = parseInt(this.dataset.index);
+
+                    // Reorder locations array
+                    const [movedLocation] = locations.splice(draggedIdx, 1);
+                    locations.splice(targetIdx, 0, movedLocation);
+
+                    // Reorder markers array
+                    const [movedMarker] = markers.splice(draggedIdx, 1);
+                    markers.splice(targetIdx, 0, movedMarker);
+
+                    // Redraw the locations list
+                    locationsList.innerHTML = '';
+                    locations.forEach((location, index) => {
+                        const li = document.createElement('li');
+                        li.setAttribute('draggable', 'true');
+                        li.dataset.index = index;
+                        li.innerHTML = `
+                                <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
+                                <div class="reorder-controls">
+                                    <span>&#9776;</span>
+                                </div>
+                            `;
+
+                        // Add event listeners
+                        li.addEventListener('dragstart', handleDragStart);
+                        li.addEventListener('dragover', handleDragOver);
+                        li.addEventListener('drop', handleDrop);
+                        li.addEventListener('dragenter', handleDragEnter);
+                        li.addEventListener('dragleave', handleDragLeave);
+                        li.addEventListener('dragend', handleDragEnd);
+
+                        locationsList.appendChild(li);
+                    });
+
+                    // Redraw route line
+                    drawRouteLine();
+
+                    // Show save button
+                    saveOrderBtn.style.display = 'block';
+                }
+
+                return false;
+            }
+
+            function handleDragEnd(e) {
+                // Clear classes
+                Array.from(locationsList.children).forEach(li => {
+                    li.classList.remove('over', 'dragging');
+                });
+            }
+
+            // Save order button click handler
+            saveOrderBtn.addEventListener('click', function () {
+                // Create order data to send to server
+                const orderData = locations.map(loc => ({
+                    Type: loc.Type,
+                    Name: loc.Name,
+                    City: loc.City
+                }));
+
+                // Send to server
+                fetch('/Trips/SaveLocationOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Location order saved successfully!');
+                            saveOrderBtn.style.display = 'none';
+                        } else {
+                            throw new Error('Error saving location order');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to save location order. Please try again.');
+                    });
+            });
+        });
+    </script>
+}

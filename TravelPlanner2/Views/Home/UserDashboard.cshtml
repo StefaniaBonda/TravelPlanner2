@@ -1,0 +1,22 @@
+﻿@model TravelPlanner2.Models.User
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "User Dashboard";
+}
+
+<main class="main-content">
+    <div class="hero-section">
+        <!-- Display the user's name -->
+        <h1>Welcome, @Model.Name</h1>
+
+        <p>Welcome to your personalized dashboard. Here you can manage your profile, view your trip plans, and more!</p>
+
+        <!-- Links for managing user options -->
+        <div class="cta-buttons">
+            <a href="/User/Profile" class="btn btn-primary">View Profile</a>
+            <a href="/User/Trips" class="btn btn-primary">View Your Trips</a>
+            <a href="/Trips/CreateTrip" class="btn btn-primary">Start planning a new trip</a>
+        </div>
+    </div>
+</main>

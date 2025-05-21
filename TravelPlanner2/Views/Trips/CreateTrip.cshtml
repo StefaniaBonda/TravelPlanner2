@@ -1,0 +1,224 @@
+﻿@{
+    ViewBag.Title = "Create Trip";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+}
+
+<h2>Create Trip</h2>
+
+<form id="trip-form">
+    <input type="text" name="country" placeholder="Țară" required />
+    <input type="text" name="city" placeholder="Oraș" required />
+    <input type="text" name="address" placeholder="Adresă (stradă, număr etc.)" />
+    <input type="number" name="radius" placeholder="Rază în metri (ex: 1000)" min="100" value="1000" />
+
+    <p>Interese:</p>
+    <label><input type="checkbox" name="interests" value="Buildings" /> Buildings</label>
+    <label><input type="checkbox" name="interests" value="Culinary" /> Culinary</label>
+    <label><input type="checkbox" name="interests" value="Nature" /> Nature</label>
+    <label><input type="checkbox" name="interests" value="Cultural" /> Cultural</label>
+    <button type="submit">Găsește locații</button>
+</form>
+
+    <div id="map" style="height: 500px; width: 100%;"></div>
+    <div class="trip-actions" style="margin-top: 20px; text-align: center;">
+        <a href="/Trips/ViewTrip" class="btn btn-primary">Finish and View your trip</a>
+    </div>
+    @section Scripts {
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            let map;
+            let poiMarkers = [];
+
+            document.addEventListener("DOMContentLoaded", function () {
+                map = L.map('map').setView([45.9432, 24.9668], 6);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                map.on('click', function (e) {
+                    const latlng = e.latlng;
+                    const marker = L.marker(latlng).addTo(map);
+                    marker.bindPopup("Coordonate: " + latlng.lat.toFixed(5) + ", " + latlng.lng.toFixed(5)).openPopup();
+
+                    const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`;
+
+                    fetch(nominatimUrl, {
+                        headers: {
+                            'User-Agent': 'MyTravelApp (myemail@example.com)'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const address = data.address;
+                            const locationDetails = `Nume: ${address.road || 'Necunoscut'}, Oraș: ${address.city || address.town || 'Necunoscut'}, Țară: ${address.country}`;
+                            marker.setPopupContent(locationDetails);
+                        })
+                        .catch(error => {
+                            marker.setPopupContent("Eroare la obținerea detaliilor.");
+                            console.error(error);
+                        });
+                });
+            });
+
+            function mapToInterestType(tags) {
+                if (tags.amenity === "restaurant" || tags.amenity === "cafe") return "Culinary";
+                if (tags.tourism === "museum" || tags.historic === "monument") return "Cultural";
+                if (tags.leisure === "park" || tags.natural) return "Nature";
+                if (tags.amenity === "place_of_worship" || tags.building === "cathedral") return "Buildings";
+                return "Unknown";
+            }
+
+            document.getElementById("trip-form").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const city = document.querySelector("input[name='city']").value;
+                const country = document.querySelector("input[name='country']").value;
+                const address = document.querySelector("input[name='address']").value.trim();
+                const radius = parseInt(document.querySelector("input[name='radius']").value.trim()) || 1000;
+                const interests = Array.from(document.querySelectorAll("input[name='interests']:checked")).map(cb => cb.value);
+
+                const query = address !== ""
+                    ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ", " + city + ", " + country)}`
+                    : `https://nominatim.openstreetmap.org/search?city=${city}&country=${country}&format=json`;
+
+                fetch(query, {
+                    headers: {
+                        'User-Agent': 'MyTravelApp (myemail@example.com)'
+                    }
+                })
+
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            alert("Locație negăsită.");
+                            return;
+                        }
+
+                        const lat = data[0].lat;
+                        const lon = data[0].lon;
+
+                        map.setView([lat, lon], 13);
+
+                        const overpassQuery = generateOverpassQuery(interests, lat, lon, radius);
+
+                        fetch("https://overpass-api.de/api/interpreter", {
+                            method: "POST",
+                            body: overpassQuery
+                        })
+                            .then(response => response.json())
+                            .then(poiData => {
+                                console.log("Date POI:", poiData);
+
+                                // Ștergem marker-ele vechi
+                                poiMarkers.forEach(m => map.removeLayer(m));
+                                poiMarkers = [];
+
+                                poiData.elements.forEach(el => {
+                                    if (el.lat && el.lon) {
+                                        const category = mapToInterestType(el.tags);
+                                        if (category === "Unknown") return; // Ignorăm necunoscutele
+
+                                        const name = el.tags.name || 'Necunoscut';
+                                        const lat = el.lat;
+                                        const lon = el.lon;
+
+                                        const popupContent = `<strong>${category}</strong>: ${name}<br />
+                                                <button onclick="addToTrip('${category}', '${name.replace(/'/g, "\\'")}', ${lat}, ${lon})">Adaugă în trip</button>`;
+
+                                        const marker = L.marker([lat, lon]).addTo(map);
+                                        marker.bindPopup(popupContent);
+                                        poiMarkers.push(marker);
+                                    }
+                                });
+
+                                if (poiData.elements.length === 0) {
+                                    alert("Nu s-au găsit locații pentru interesele selectate.");
+                                }
+                            })
+                            .catch(err => console.error("Eroare Overpass:", err));
+                    });
+            });
+
+            function generateOverpassQuery(interests, lat, lon, radius) {
+
+                const filters = {
+                    "Buildings": `
+                            node(around:${radius},${lat},${lon})[amenity=place_of_worship];
+                            node(around:${radius},${lat},${lon})[building=cathedral];`,
+                    "Nature": `
+                            node(around:${radius},${lat},${lon})[leisure=park];`,
+                    "Cultural": `
+                            node(around:${radius},${lat},${lon})[tourism=museum];
+                            node(around:${radius},${lat},${lon})[historic=monument];`,
+                    "Culinary": `
+                            node(around:${radius},${lat},${lon})[amenity=restaurant];
+                            node(around:${radius},${lat},${lon})[amenity=cafe];`
+                };
+
+                const queryParts = interests.map(i => filters[i]).filter(Boolean);
+
+                return `
+                        [out:json][timeout:25];
+                        (
+                            ${queryParts.join('\n')}
+                        );
+                        out body;
+                    `;
+            }
+
+            function addToTrip(type, name, lat, lon) {
+                const city = document.querySelector("input[name='city']").value;
+                const country = document.querySelector("input[name='country']").value;
+
+                fetch('/Trips/GetTripId', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(tripId => {
+                        if (!tripId) {
+                            alert("No active trip found.");
+                            return;
+                        }
+
+                        const data = {
+                            Type: type,
+                            Name: name || "Fără nume",
+                            Latitude: lat,
+                            Longitude: lon,
+                            City: city,
+                            Country: country,
+                            Description: "Locație adăugată automat din hartă.",
+                            Price: 0
+                        };
+
+                        console.log("Date trimise:", data);
+
+                        fetch('/Trips/AddLocation', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(resp => {
+                                if (resp.ok) {
+                                    alert("Locația a fost adăugată în trip!");
+                                } else {
+                                    alert("Eroare la adăugare.");
+                                }
+                            });
+                    })
+                    .catch(err => {
+                        console.error("Error fetching TripId:", err);
+                        alert("Eroare la obținerea TripId.");
+                    });
+            }
+        </script>
+    }

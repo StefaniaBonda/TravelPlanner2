@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TravelPlanner2.Models.Trip>
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="title-section">
+    <h1>One app, thousand possibilities</h1>
+    <p class="sub-quote">"Create, explore, and manage your trip - all in one."</p>
+</div>
+
+<!-- Carusel Swiper -->
+<div class="full-carousel swiper coverflow-style">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="~/Content/img1.jpg" alt="img1" /></div>
+        <div class="swiper-slide"><img src="~/Content/img2.jpg" alt="img2" /></div>
+        <div class="swiper-slide"><img src="~/Content/img3.jpg" alt="img3" /></div>
+        <div class="swiper-slide"><img src="~/Content/img4.jpg" alt="img4" /></div>
+        <div class="swiper-slide"><img src="~/Content/img5.jpg" alt="img5" /></div>
+        <div class="swiper-slide"><img src="~/Content/img6.jpg" alt="img6" /></div>
+        <div class="swiper-slide"><img src="~/Content/img7.jpg" alt="img7" /></div>
+        <div class="swiper-slide"><img src="~/Content/img8.jpg" alt="img8" /></div>
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
+
+<!-- Butoane -->
+<div class="cta-buttons">
+    <a href="~/Home/SignIn" class="btn btn-primary">Plan your next adventure!</a>
+    <a href="#" class="link-guest">or continue as guest</a>
+</div>
+
+<div class="hero-section">
+    <a href="#faq" class="link-help">Get Help (FAQ)</a>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.full-carousel', {
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            loop: true,
+            coverflowEffect: {
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+            },
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+    </script>
+}

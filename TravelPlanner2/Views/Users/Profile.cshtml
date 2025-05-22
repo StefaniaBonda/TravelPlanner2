@@ -1,0 +1,17 @@
+﻿@model TravelPlanner2.Models.User
+
+@{
+    ViewBag.Title = "Your Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Your Profile</h2>
+
+<p><strong>Name:</strong> @Model.Name</p>
+<p><strong>Email:</strong> @Model.Email</p>
+<p><strong>Role:</strong> @Model.Role</p>
+
+<a href="@Url.Action("EditProfile", "Users")" class="btn btn-primary">Edit Profile</a>
+
+
+

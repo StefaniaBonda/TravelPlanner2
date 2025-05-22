@@ -17,7 +17,7 @@ namespace TravelPlanner2.Models
         [Required]
         public string Role { get; set; } // "Admin", "User" or "Guest"
 
-        // Colectie de Trips
+      
 
     }
 }

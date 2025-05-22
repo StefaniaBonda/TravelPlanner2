@@ -1,0 +1,47 @@
+﻿@model TravelPlanner2.Models.User
+
+@{
+    ViewBag.Title = "Edit Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="hero-section">
+    <h2>Edit Your Profile</h2>
+
+    @using (Html.BeginForm("EditProfile", "Users", FormMethod.Post, new { @class = "styled-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Name)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email)
+        </div>
+
+        @* Current Password Field (for verification) *@
+        <div class="form-group">
+            @Html.Label("Current Password")
+            <input type="password" name="CurrentPassword" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, "New Password")
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Password)
+        </div>
+
+        @* Hide the Role field from users *@
+        @Html.HiddenFor(m => m.Role)
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="@Url.Action("Profile", "Users")" class="btn btn-secondary">Cancel</a>
+    }
+</div>

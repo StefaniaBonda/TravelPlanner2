@@ -123,5 +123,71 @@ namespace TravelPlanner2.Controllers
             }
             base.Dispose(disposing);
         }
+
+       
+        // Action for the View Profile button
+        public ActionResult Profile()
+        {
+            var sessionUser = Session["User"] as User;
+            if (sessionUser == null)
+                return RedirectToAction("SignIn", "Home");
+
+            var user = db.Users.Find(sessionUser.Id);
+            if (user == null)
+                return HttpNotFound();
+
+            return View(user); // Create Views/Users/Profile.cshtml
+        }
+
+        public ActionResult EditProfile()
+        {
+            var sessionUser = Session["User"] as User;
+            if (sessionUser == null)
+                return RedirectToAction("SignIn", "Home");
+
+            var user = db.Users.Find(sessionUser.Id);
+            if (user == null)
+                return HttpNotFound();
+
+            return View("EditProfile", user); // Reuse your existing Edit.cshtml view
+        }
+
+        // POST: Users/EditProfile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProfile([Bind(Include = "Id,Name,Email,Password,Role")] User updatedUser)
+        {
+            var sessionUser = Session["User"] as User;
+            if (sessionUser == null)
+                return RedirectToAction("SignIn", "Home");
+
+            var userInDb = db.Users.Find(sessionUser.Id);
+            if (userInDb == null)
+                return HttpNotFound();
+
+            string currentPassword = Request["CurrentPassword"];
+
+            // If password was changed, check current password
+            if (updatedUser.Password != userInDb.Password)
+            {
+                if (string.IsNullOrEmpty(currentPassword) || currentPassword != userInDb.Password)
+                {
+                    ModelState.AddModelError("", "Incorrect current password. Changes not saved.");
+                    return View("EditProfile", updatedUser);
+                }
+            }
+
+            // Update other fields
+            userInDb.Name = updatedUser.Name;
+            userInDb.Email = updatedUser.Email;
+
+            if (updatedUser.Password != userInDb.Password)
+                userInDb.Password = updatedUser.Password;
+
+            db.SaveChanges();
+            Session["User"] = userInDb;
+
+            return RedirectToAction("Profile");
+        }
     }
 }

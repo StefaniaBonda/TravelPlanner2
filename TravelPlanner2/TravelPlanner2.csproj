@@ -280,6 +280,8 @@
     <Content Include="Views\ConnectionNatures\Edit.cshtml" />
     <Content Include="Views\ConnectionNatures\Index.cshtml" />
     <Content Include="Views\Trips\ViewTrip.cshtml" />
+    <Content Include="Views\Users\EditProfile.cshtml" />
+    <Content Include="Views\Users\Profile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

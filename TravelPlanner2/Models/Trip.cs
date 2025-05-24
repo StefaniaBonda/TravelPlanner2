@@ -18,5 +18,14 @@ namespace TravelPlanner2.Models
         public double timeRange { get; set; }
         [Required]
         public double kmRange { get; set; }
+
+        //noi
+        [StringLength(100)]
+        public string Name { get; set; } // Removed nullable reference type
+
+        [StringLength(500)]
+        public string Description { get; set; } // Removed nullable reference type
+
+        public bool Published { get; set; } = false;
     }
 }

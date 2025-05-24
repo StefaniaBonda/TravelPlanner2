@@ -124,7 +124,7 @@ namespace TravelPlanner2.Controllers
             base.Dispose(disposing);
         }
 
-       
+
         // Action for the View Profile button
         public ActionResult Profile()
         {
@@ -189,5 +189,20 @@ namespace TravelPlanner2.Controllers
 
             return RedirectToAction("Profile");
         }
+
+        public ActionResult AdminDashboard()
+        {
+            var sessionUser = Session["User"] as User;
+            if (sessionUser == null || sessionUser.Role != "Admin")
+            {
+                return RedirectToAction("SignIn", "Home");
+            }
+
+
+            return RedirectToAction("AdminDashboard", "Admin");
+        }
+
+
+
     }
 }

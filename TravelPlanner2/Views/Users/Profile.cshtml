@@ -5,13 +5,27 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Your Profile</h2>
+<div class="hero-section">
+    <h1 class="text-center">Profilul tău</h1>
 
-<p><strong>Name:</strong> @Model.Name</p>
-<p><strong>Email:</strong> @Model.Email</p>
-<p><strong>Role:</strong> @Model.Role</p>
+    <div class="styled-form" style="text-align: left;">
+        <div class="form-group">
+            <label><strong>👤 Nume:</strong></label>
+            <p>@Model.Name</p>
+        </div>
 
-<a href="@Url.Action("EditProfile", "Users")" class="btn btn-primary">Edit Profile</a>
+        <div class="form-group">
+            <label><strong>📧 Email:</strong></label>
+            <p>@Model.Email</p>
+        </div>
 
+        <div class="form-group">
+            <label><strong>🛡️ Rol:</strong></label>
+            <p>@Model.Role</p>
+        </div>
 
-
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="@Url.Action("EditProfile", "Users")" class="btn btn-primary">✏️ Editează Profilul</a>
+        </div>
+    </div>
+</div>

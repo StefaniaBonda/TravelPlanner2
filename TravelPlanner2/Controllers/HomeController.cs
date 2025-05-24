@@ -39,10 +39,11 @@ namespace TravelPlanner2.Controllers
 
             if (user != null)
             {
-                Session["UserEmail"] = user.Email;                
+                Session["UserEmail"] = user.Email;
                 Session["UserId"] = user.Id;
                 Session["User"] = user;
-
+                if (user.Role == "Admin")
+                    return RedirectToAction("AdminDashboard", "Users");
                 return RedirectToAction("UserDashboard", "Home");
             }
             else
@@ -113,10 +114,5 @@ namespace TravelPlanner2.Controllers
 
             return View(user);
         }
-
-
-       
-
-
     }
 }

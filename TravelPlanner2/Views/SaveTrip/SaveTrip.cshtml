@@ -3,99 +3,148 @@
     ViewBag.Title = "Save Trip Details";
 }
 
-<h2>Save Trip Details</h2>
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #tripMap {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-<div class="row">
-    <div class="col-md-6">
-        @* Formularul pentru nume, descriere și favorite *@
-        @using (Html.BeginForm("SaveTrip", "SaveTrip", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
+        .number-icon {
+            background: #2A81CB;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: bold;
+            line-height: 30px;
+            width: 30px;
+            height: 30px;
+            box-shadow: 0 0 2px #333;
+        }
+    </style>
+}
 
-            <div class="form-horizontal">
-                <h4>Enter Trip Details</h4>
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
+<div class="container my-5">
+    <h2 class="mb-4">Save Trip Details</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            @using (Html.BeginForm("SaveTrip", "SaveTrip", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.TripId)
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Name, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                        </div>
 
-                <div class="form-group mt-2">
-                    @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
-                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Description, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
 
-                <div class="form-group form-check mt-3">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.EditorFor(model => model.IsFavorite)
+                        <div class="form-check mb-3">
+                            @Html.CheckBoxFor(model => model.IsFavorite, new { @class = "form-check-input" })
                             @Html.LabelFor(model => model.IsFavorite, new { @class = "form-check-label" })
                         </div>
-                    </div>
-                </div>
 
-                <div class="form-group mt-3">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-    <div class="col-md-6">
-        @* Harta *@
-        <div id="map" style="height: 400px;"></div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <div id="tripMap"></div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.polylineDecorator/1.7.0/leaflet.polylineDecorator.min.js"></script>
 
-    <script type="text/javascript">
-        var map = L.map('map').setView([45.9432, 24.9668], 6); // Setare inițială a vederii
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const map = L.map('tripMap').setView([45.9432, 24.9668], 6);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Apel AJAX către TripsController pentru a obține locațiile trip-ului curent
-        $.ajax({
-            url: '/Trips/GetTripLocations', //Folosim endpoint-ul existent
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                if (data && data.length > 0) {
-                    var bounds = [];
-                    //Iterăm prin locații și le adăugăm pe hartă
-                    for (var i = 0; i < data.length; i++) {
-                        var loc = data[i];
-                        var marker = L.marker([loc.Latitude, loc.Longitude]).addTo(map);
-                        marker.bindPopup("<b>" + loc.Name + "</b><br>" + loc.Description).openPopup();
-                        bounds.push([loc.Latitude, loc.Longitude]);
-                    }
-                    //Ajustăm vederea hărții
-                    if (bounds.length > 0) {
-                        map.fitBounds(bounds, { padding: [50, 50] });
-                    }
-                } else {
-                    console.log("Nu au fost găsite locații pentru acest trip.");
-                    // Poți afișa un mesaj utilizatorului
+        const tripId = @Html.Raw(Model.TripId);
+
+        const endpoints = [
+            `/SaveTrip/GetOrderedCulinaryLocations?tripId=${tripId}`,
+            `/SaveTrip/GetOrderedBuildingLocations?tripId=${tripId}`,
+            `/SaveTrip/GetOrderedNatureLocations?tripId=${tripId}`,
+            `/SaveTrip/GetOrderedCulturalLocations?tripId=${tripId}`
+        ];
+
+        Promise.all(endpoints.map(url => fetch(url).then(res => res.json())))
+            .then(allData => {
+                const allLocations = allData.flat(); // Combinăm toate obiectivele într-o singură listă
+                if (!allLocations.length) return;
+
+                const latlngs = [];
+
+                allLocations.forEach((loc, index) => {
+                    const coords = [loc.Latitude, loc.Longitude];
+                    latlngs.push(coords);
+
+                    L.marker(coords, {
+                        icon: L.divIcon({
+                            className: 'custom-div-icon',
+                            html: `<div class="number-icon">${index + 1}</div>`,
+                            iconSize: [30, 42],
+                            iconAnchor: [15, 42]
+                        })
+                    }).addTo(map)
+                      .bindPopup(`<strong>${loc.Name}</strong><br>${loc.Description}`);
+                });
+
+                const polyline = L.polyline(latlngs, {
+                    color: 'blue',
+                    weight: 4,
+                    opacity: 0.7
+                }).addTo(map);
+
+                L.polylineDecorator(polyline, {
+                    patterns: [
+                        {
+                            offset: '5%',
+                            repeat: '15%',
+                            symbol: L.Symbol.arrowHead({
+                                pixelSize: 10,
+                                pathOptions: { color: 'darkblue', fillOpacity: 1, weight: 2 }
+                            })
+                        }
+                    ]
+                }).addTo(map);
+
+                map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+
+                if (latlngs.length) {
+                    const bounds = L.latLngBounds(latlngs);
+                    map.fitBounds(bounds, { padding: [50, 50] });
                 }
-            },
-            error: function (error) {
-                console.error("Eroare la obținerea locațiilor trip-ului:", error);
-            }
-        });
+
+            })
+
+
+            .catch(err => console.error("Eroare la încărcarea locațiilor:", err));
+    });
     </script>
+
 }

@@ -115,6 +115,72 @@ namespace TravelPlanner2.Controllers
             return RedirectToAction("SaveTrip"); //Sau o alta actiune, daca vrei
         }
 
+        [HttpGet]
+        public JsonResult GetOrderedCulinaryLocations(int tripId)
+        {
+            var locations = db.ConnectionCulinaries
+                .Where(cc => cc.TripId == tripId)
+                .OrderBy(cc => cc.Order)
+                .Select(cc => new {
+                    cc.Culinary.Name,
+                    cc.Culinary.Description,
+                    cc.Culinary.Latitude,
+                    cc.Culinary.Longitude
+                })
+                .ToList();
+
+            return Json(locations, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetOrderedBuildingLocations(int tripId)
+        {
+            var locations = db.ConnectionBuildingss
+                .Where(cc => cc.TripId == tripId)
+                .OrderBy(cc => cc.Order)
+                .Select(cc => new {
+                    cc.Buildings.Name,
+                    cc.Buildings.Description,
+                    cc.Buildings.Latitude,
+                    cc.Buildings.Longitude
+                })
+                .ToList();
+
+            return Json(locations, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetOrderedNatureLocations(int tripId)
+        {
+            var locations = db.ConnectionNatures
+                .Where(cc => cc.TripId == tripId)
+                .OrderBy(cc => cc.Order)
+                .Select(cc => new {
+                    cc.Nature.Name,
+                    cc.Nature.Description,
+                    cc.Nature.Latitude,
+                    cc.Nature.Longitude
+                })
+                .ToList();
+
+            return Json(locations, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetOrderedCulturalLocations(int tripId)
+        {
+            var locations = db.ConnectionCulturals
+                .Where(cc => cc.TripId == tripId)
+                .OrderBy(cc => cc.Order)
+                .Select(cc => new {
+                    cc.Cultural.Name,
+                    cc.Cultural.Description,
+                    cc.Cultural.Latitude,
+                    cc.Cultural.Longitude
+                })
+                .ToList();
+
+            return Json(locations, JsonRequestBehavior.AllowGet);
+        }
+
+
         //Model
         public class SaveTripViewModel
         {

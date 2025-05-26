@@ -43,6 +43,7 @@ namespace TravelPlanner2.Controllers
             }
 
             trip.Published = true;
+            trip.PublishedDate = DateTime.Now;
             trip.PublishRequested = false;
             db.SaveChanges();
 

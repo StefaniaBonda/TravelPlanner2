@@ -166,6 +166,7 @@
     <Compile Include="Controllers\ConnectionNaturesController.cs" />
     <Compile Include="Controllers\CulinariesController.cs" />
     <Compile Include="Controllers\CulturalsController.cs" />
+    <Compile Include="Controllers\GuesttController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NaturesController.cs" />
     <Compile Include="Controllers\SaveTripController.cs" />
@@ -178,6 +179,10 @@
     <Compile Include="Migrations\202505261942138_Initial Create.cs" />
     <Compile Include="Migrations\202505261942138_Initial Create.Designer.cs">
       <DependentUpon>202505261942138_Initial Create.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202505262109575_AddPublishedDateToTrip.cs" />
+    <Compile Include="Migrations\202505262109575_AddPublishedDateToTrip.Designer.cs">
+      <DependentUpon>202505262109575_AddPublishedDateToTrip.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Buildings.cs" />
@@ -318,6 +323,7 @@
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
     <Content Include="Views\Admin\PendingTrips.cshtml" />
+    <Content Include="Views\Guestt\GuestView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -352,6 +358,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202505261942138_Initial Create.resx">
       <DependentUpon>202505261942138_Initial Create.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505262109575_AddPublishedDateToTrip.resx">
+      <DependentUpon>202505262109575_AddPublishedDateToTrip.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

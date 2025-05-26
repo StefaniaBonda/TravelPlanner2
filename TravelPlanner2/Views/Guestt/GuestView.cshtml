@@ -1,4 +1,4 @@
-﻿@model List<TravelPlanner2.Controllers.GuestTripsController.TripViewModel>
+﻿@model List<TravelPlanner2.Controllers.GuesttController.TripViewModel>
 @{
     ViewBag.Title = "Explore Trips";
 }
@@ -8,20 +8,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <div class="container mt-4">
-    <h2 class="mb-4">Explore Published Trips</h2>
+    <h2 class="mb-4">Explore Trips</h2>
 
-    <div class="mb-3">
-        <label for="cityFilter" class="form-label">Filter by City:</label>
-        <select id="cityFilter" class="form-select" onchange="filterTrips()">
-            <option value="">All</option>
-            @foreach (var city in Model.SelectMany(t => t.CityNames).Distinct())
-            {
-                <option value="@city">@city</option>
-            }
-        </select>
-    </div>
-
-    <div class="row g-4" id="tripContainer">
+    <div class="row g-4">
         @for (int i = 0; i < Model.Count; i++)
         {
             var trip = Model[i];
@@ -29,37 +18,31 @@
             var firstLat = trip.Objectives.FirstOrDefault()?.Latitude ?? 45;
             var firstLng = trip.Objectives.FirstOrDefault()?.Longitude ?? 25;
 
-            <div class="col-md-4 trip-card" data-cities="@string.Join(",", trip.CityNames)">
+            <div class="col-md-4">
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-primary">@trip.Name</h5>
 
-                        @if (trip.CityNames.Any())
-                        {
-                            <p class="card-subtitle mb-2 text-muted">
-                                <strong>Cities:</strong> @string.Join(", ", trip.CityNames.Take(3))
-                            </p>
-                        }
+                        <p class="card-subtitle mb-2 text-muted">
+                            <strong>Published by:</strong> @trip.PublishedBy
+                            @if (trip.PublishedDate.HasValue)
+                            {
+                                <span class="text-muted">on @trip.PublishedDate.Value.ToString("dd MMM yyyy")</span>
+                            }
+                        </p>
 
+                        <p><strong>Cities:</strong> @string.Join(", ", trip.CityNames.Take(3))</p>
                         <p class="card-text">@trip.Description</p>
                         <p><strong>Km Range:</strong> @trip.KmRange km</p>
 
-                        @if (trip.Objectives.Any())
-                        {
-                            <p class="mt-3 mb-1"><strong>Objectives:</strong></p>
-                            <ul class="ps-3">
-                                @for (int j = 0; j < trip.Objectives.Count; j++)
-                                {
-                                    <li>@(j + 1). @trip.Objectives[j].Name</li>
-                                }
-                            </ul>
-                        }
+                        <ul class="ps-3 mt-2">
+                            @for (int j = 0; j < trip.Objectives.Count; j++)
+                            {
+                                <li>@(j + 1). @trip.Objectives[j].Name</li>
+                            }
+                        </ul>
 
                         <div id="@mapId" class="rounded border mt-3" style="height: 200px;"></div>
-
-                        <div class="mt-auto pt-2">
-                            <p><strong>Status:</strong> <span class="badge bg-success">Published</span></p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -67,12 +50,11 @@
             <script>
                 window.addEventListener("load", function () {
                     const map = L.map("@mapId").setView([@firstLat, @firstLng], 6);
-
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; OpenStreetMap contributors'
                     }).addTo(map);
-
                     const points = [];
+
                     @for (int j = 0; j < trip.Objectives.Count; j++)
                     {
                         var obj = trip.Objectives[j];
@@ -93,13 +75,3 @@
         }
     </div>
 </div>
-
-<script>
-    function filterTrips() {
-        const selectedCity = document.getElementById("cityFilter").value.toLowerCase();
-        document.querySelectorAll(".trip-card").forEach(card => {
-            const cities = card.getAttribute("data-cities").toLowerCase();
-            card.style.display = selectedCity === "" || cities.includes(selectedCity) ? "block" : "none";
-        });
-    }
-</script>

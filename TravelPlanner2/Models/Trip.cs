@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TravelPlanner2.Models
@@ -28,6 +29,9 @@ namespace TravelPlanner2.Models
 
         public bool Published { get; set; } = false;
         public bool PublishRequested { get; set; }
+
+        public DateTime? PublishedDate { get; set; }
+
 
     }
 }

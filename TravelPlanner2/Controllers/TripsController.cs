@@ -81,7 +81,7 @@ namespace TravelPlanner2.Controllers
                             Country = data.Country,
                             City = data.City,
                             Price = data.Price
-                       
+
                         };
                         db.Buildingss.Add(existingBuilding);
                         db.SaveChanges();
@@ -96,11 +96,11 @@ namespace TravelPlanner2.Controllers
                         var connB = new ConnectionBuildings
                         {
                             TripId = tripId.Value,
-                            BuildingsId = existingBuilding.Id,                       
+                            BuildingsId = existingBuilding.Id,
                         };
                         db.ConnectionBuildingss.Add(connB);
                     }
-                    
+
                     break;
 
                 case "Culinary":
@@ -143,7 +143,7 @@ namespace TravelPlanner2.Controllers
 
                     break;
 
-                
+
                 case "Cultural":
                     var existingCultural = db.Culturals.FirstOrDefault(c =>
                         c.Name == data.Name &&
@@ -237,6 +237,10 @@ namespace TravelPlanner2.Controllers
             {
                 return RedirectToAction("CreateTrip");
             }
+
+            // Calculate and update kmRange in the database
+            UpdateTripDistance(tripId.Value);
+
             return View();
         }
 
@@ -431,6 +435,113 @@ namespace TravelPlanner2.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
+
+        // Helper method to calculate and update trip distance in the database
+        private void UpdateTripDistance(int tripId)
+        {
+            try
+            {
+                // Gather all locations for this trip, ordered by their Order property
+                var locations = new List<LocationWithCoordinates>();
+
+                // Add all locations from all types, but keep their Order property
+                locations.AddRange(
+                    db.ConnectionBuildingss
+                        .Where(cb => cb.TripId == tripId)
+                        .Select(cb => new LocationWithCoordinates
+                        {
+                            Latitude = cb.Buildings.Latitude,
+                            Longitude = cb.Buildings.Longitude,
+                            Order = cb.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionCulinaries
+                        .Where(cc => cc.TripId == tripId)
+                        .Select(cc => new LocationWithCoordinates
+                        {
+                            Latitude = cc.Culinary.Latitude,
+                            Longitude = cc.Culinary.Longitude,
+                            Order = cc.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionCulturals
+                        .Where(cc => cc.TripId == tripId)
+                        .Select(cc => new LocationWithCoordinates
+                        {
+                            Latitude = cc.Cultural.Latitude,
+                            Longitude = cc.Cultural.Longitude,
+                            Order = cc.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionNatures
+                        .Where(cn => cn.TripId == tripId)
+                        .Select(cn => new LocationWithCoordinates
+                        {
+                            Latitude = cn.Nature.Latitude,
+                            Longitude = cn.Nature.Longitude,
+                            Order = cn.Order
+                        })
+                        .ToList()
+                );
+
+                // Sort all locations by Order
+                locations = locations.OrderBy(l => l.Order).ToList();
+
+                // Calculate total distance
+                double totalDistance = 0;
+                for (int i = 0; i < locations.Count - 1; i++)
+                {
+                    var from = locations[i];
+                    var to = locations[i + 1];
+                    totalDistance += CalculateDistanceKm(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
+                }
+
+                // Update the trip's kmRange
+                var trip = db.Trips.Find(tripId);
+                if (trip != null)
+                {
+                    trip.kmRange = totalDistance;
+                    db.Entry(trip).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating trip distance: {ex.Message}");
+            }
+        }
+
+
+        // Helper method to calculate distance between two points in kilometers
+        private double CalculateDistanceKm(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371; // Earth's radius in kilometers
+
+            double dLat = (lat2 - lat1) * Math.PI / 180;
+            double dLon = (lon2 - lon1) * Math.PI / 180;
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                      Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                      Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            return R * c;
+        }
+
+        // Helper class for location coordinates
+        private class LocationWithCoordinates
+        {
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
+            public int Order { get; set; }
         }
     }
 

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity; // Asigură-te că e System.Data.Entity pentru EF6
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -18,33 +18,29 @@ namespace TravelPlanner2.Controllers
         // GET: SaveTrip/SaveTrip
         public ActionResult SaveTrip()
         {
-            // Obține tripId-ul din sesiune
             int? tripId = Session["TripId"] as int?;
             if (tripId == null)
             {
-                // Redirecționează către pagina de creare trip dacă nu există unul activ
                 return RedirectToAction("CreateTrip", "Trips");
             }
 
-            // Obține ID-ul utilizatorului curent din sesiune
             int? currentUserId = Session["UserId"] as int?;
             if (currentUserId == null)
             {
-                // Dacă utilizatorul nu este logat, redirecționează la login
                 return RedirectToAction("Login", "Account");
             }
 
-            // Caută trip-ul în baza de date
             var trip = db.Trips.Find(tripId);
             if (trip == null)
             {
                 return HttpNotFound();
             }
 
-            // Verifică dacă trip-ul este deja favorit pentru utilizatorul curent
+            // Always recalculate kmRange before showing
+            UpdateTripDistance(trip.Id);
+
             bool isFavorited = db.Favorites.Any(f => f.UserId == currentUserId.Value && f.TripId == trip.Id);
 
-            // Creează ViewModel-ul
             var viewModel = new SaveTripViewModel
             {
                 kmRange = trip.kmRange,
@@ -62,33 +58,32 @@ namespace TravelPlanner2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveTrip(SaveTripViewModel model)
         {
-            // Obține tripId-ul din sesiune (sau folosește model.TripId, dacă îl ai)
             int? tripId = Session["TripId"] as int?;
-            if (tripId == null || tripId != model.TripId) //Verificare suplimentara
+            if (tripId == null || tripId != model.TripId)
             {
-                return RedirectToAction("CreateTrip", "Trips"); //Sau o pagina de eroare
+                return RedirectToAction("CreateTrip", "Trips");
             }
 
-            // Obține ID-ul utilizatorului curent din sesiune
             int? currentUserId = Session["UserId"] as int?;
             if (currentUserId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // Găsește trip-ul în baza de date
             var trip = db.Trips.Find(tripId);
             if (trip == null)
             {
                 return HttpNotFound();
             }
 
-            // Actualizează proprietățile
+            // Always recalculate kmRange before saving
+            UpdateTripDistance(trip.Id);
+            db.Entry(trip).Reload(); // Refresh trip from DB
+
             trip.Name = model.Name;
             trip.Description = model.Description;
-            trip.kmRange = model.kmRange;
+            // trip.kmRange is up-to-date
 
-            // Gestionează Favorite
             var existingFavorite = db.Favorites.FirstOrDefault(f => f.UserId == currentUserId.Value && f.TripId == trip.Id);
             if (model.IsFavorite)
             {
@@ -113,8 +108,7 @@ namespace TravelPlanner2.Controllers
             db.Entry(trip).State = EntityState.Modified;
             db.SaveChanges();
 
-            // Redirecționează înapoi la pagina de detalii
-            return RedirectToAction("SaveTrip"); //Sau o alta actiune, daca vrei
+            return RedirectToAction("SaveTrip");
         }
 
         [HttpGet]
@@ -182,8 +176,108 @@ namespace TravelPlanner2.Controllers
             return Json(locations, JsonRequestBehavior.AllowGet);
         }
 
+        // Helper method to calculate and update trip distance in the database
+        private void UpdateTripDistance(int tripId)
+        {
+            try
+            {
+                var locations = new List<LocationWithCoordinates>();
 
-        //Model
+                locations.AddRange(
+                    db.ConnectionBuildingss
+                        .Where(cb => cb.TripId == tripId)
+                        .Select(cb => new LocationWithCoordinates
+                        {
+                            Latitude = cb.Buildings.Latitude,
+                            Longitude = cb.Buildings.Longitude,
+                            Order = cb.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionCulinaries
+                        .Where(cc => cc.TripId == tripId)
+                        .Select(cc => new LocationWithCoordinates
+                        {
+                            Latitude = cc.Culinary.Latitude,
+                            Longitude = cc.Culinary.Longitude,
+                            Order = cc.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionCulturals
+                        .Where(cc => cc.TripId == tripId)
+                        .Select(cc => new LocationWithCoordinates
+                        {
+                            Latitude = cc.Cultural.Latitude,
+                            Longitude = cc.Cultural.Longitude,
+                            Order = cc.Order
+                        })
+                        .ToList()
+                );
+                locations.AddRange(
+                    db.ConnectionNatures
+                        .Where(cn => cn.TripId == tripId)
+                        .Select(cn => new LocationWithCoordinates
+                        {
+                            Latitude = cn.Nature.Latitude,
+                            Longitude = cn.Nature.Longitude,
+                            Order = cn.Order
+                        })
+                        .ToList()
+                );
+
+                locations = locations.OrderBy(l => l.Order).ToList();
+
+                double totalDistance = 0;
+                for (int i = 0; i < locations.Count - 1; i++)
+                {
+                    var from = locations[i];
+                    var to = locations[i + 1];
+                    totalDistance += CalculateDistanceKm(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
+                }
+
+                var trip = db.Trips.Find(tripId);
+                if (trip != null)
+                {
+                    trip.kmRange = totalDistance;
+                    db.Entry(trip).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating trip distance: {ex.Message}");
+            }
+        }
+
+        // Helper method to calculate distance between two points in kilometers
+        private double CalculateDistanceKm(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371; // Earth's radius in kilometers
+
+            double dLat = (lat2 - lat1) * Math.PI / 180;
+            double dLon = (lon2 - lon1) * Math.PI / 180;
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                      Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                      Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            return R * c;
+        }
+
+        // Helper class for location coordinates
+        private class LocationWithCoordinates
+        {
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
+            public int Order { get; set; }
+        }
+
+        // ViewModel
         public class SaveTripViewModel
         {
             public int TripId { get; set; }

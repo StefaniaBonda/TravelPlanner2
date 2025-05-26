@@ -166,6 +166,7 @@
     <Compile Include="Controllers\ConnectionNaturesController.cs" />
     <Compile Include="Controllers\CulinariesController.cs" />
     <Compile Include="Controllers\CulturalsController.cs" />
+    <Compile Include="Controllers\GuestController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NaturesController.cs" />
     <Compile Include="Controllers\SaveTripController.cs" />
@@ -334,6 +335,7 @@
     <Content Include="Views\Admin\ManageTrips.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
+    <Content Include="Views\Guest\GuestView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

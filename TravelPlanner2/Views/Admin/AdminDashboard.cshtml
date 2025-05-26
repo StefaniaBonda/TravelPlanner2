@@ -1,0 +1,15 @@
+﻿@model IEnumerable<TravelPlanner2.Models.User>
+@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Admin Panel</h2>
+
+<div class="mb-3">
+    <a href="@Url.Action("PendingTrips", "Admin")" class="btn btn-primary">View Publish Requests</a>
+    <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-secondary">Manage Users</a>
+    <a href="@Url.Action("ManageTrips", "Admin")" class="btn btn-success">Manage Trips</a>
+</div>
+
+

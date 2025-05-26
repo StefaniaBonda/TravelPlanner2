@@ -42,8 +42,15 @@ namespace TravelPlanner2.Controllers
                 Session["UserEmail"] = user.Email;                
                 Session["UserId"] = user.Id;
                 Session["User"] = user;
-
-                return RedirectToAction("UserDashboard", "Home");
+                if(user.Role == "Admin")
+                {
+                    return RedirectToAction("AdminDashboard", "Admin");
+                }
+                else if (user.Role == "User")
+                {
+                    return  RedirectToAction("UserDashboard", "Home");
+                }
+                return RedirectToAction("Index", "Home");
             }
             else
             {               
@@ -114,8 +121,13 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        public ActionResult GuestPage()
+        {   
+            var trips = new List<ViewTripsController.TripViewModel>();
+            return View(trips);
+        }
 
-       
+
 
 
     }

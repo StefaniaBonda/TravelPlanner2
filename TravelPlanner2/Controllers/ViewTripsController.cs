@@ -1,0 +1,138 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using TravelPlanner2.Models;
+
+namespace TravelPlanner2.Controllers
+{
+    public class ViewTripsController : Controller
+    {
+        private MyDBContext db = new MyDBContext();
+
+        public ActionResult Index()
+        {
+            int? currentUserId = Session["UserId"] as int?;
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var trips = db.Trips
+                .Where(t => t.UserId == currentUserId.Value)
+                .ToList()
+                .Select(t => new TripViewModel
+                {
+                    TripId = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Published = t.Published,
+                    KmRange = t.kmRange,
+                    CityNames = GetCitiesForTrip(t.Id),
+                    Objectives = GetObjectivesForTrip(t.Id)
+                })
+                .ToList();
+
+            return View(trips);
+        }
+
+        private List<string> GetCitiesForTrip(int tripId)
+        {
+            var cities = new List<string>();
+
+            cities.AddRange(db.ConnectionBuildingss.Where(c => c.TripId == tripId).Select(c => c.Buildings.City));
+            cities.AddRange(db.ConnectionCulinaries.Where(c => c.TripId == tripId).Select(c => c.Culinary.City));
+            cities.AddRange(db.ConnectionNatures.Where(c => c.TripId == tripId).Select(c => c.Nature.City));
+            cities.AddRange(db.ConnectionCulturals.Where(c => c.TripId == tripId).Select(c => c.Cultural.City));
+
+            return cities.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList();
+        }
+
+        private List<ObjectiveInfo> GetObjectivesForTrip(int tripId)
+        {
+            var objectives = new List<ObjectiveInfo>();
+
+            objectives.AddRange(db.ConnectionBuildingss.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Building",
+                Name = c.Buildings.Name,
+                Latitude = c.Buildings.Latitude,
+                Longitude = c.Buildings.Longitude,
+                Order = c.Order
+            }));
+
+            objectives.AddRange(db.ConnectionCulinaries.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Culinary",
+                Name = c.Culinary.Name,
+                Latitude = c.Culinary.Latitude,
+                Longitude = c.Culinary.Longitude,
+                Order = c.Order
+            }));
+
+            objectives.AddRange(db.ConnectionNatures.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Nature",
+                Name = c.Nature.Name,
+                Latitude = c.Nature.Latitude,
+                Longitude = c.Nature.Longitude,
+                Order = c.Order
+            }));
+
+            objectives.AddRange(db.ConnectionCulturals.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Cultural",
+                Name = c.Cultural.Name,
+                Latitude = c.Cultural.Latitude,
+                Longitude = c.Cultural.Longitude,
+                Order = c.Order
+            }));
+
+            return objectives.OrderBy(o => o.Order).ToList();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RequestPublish(int tripId)
+        {
+            int? currentUserId = Session["UserId"] as int?;
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var trip = db.Trips.FirstOrDefault(t => t.Id == tripId && t.UserId == currentUserId.Value);
+            if (trip == null)
+            {
+                return HttpNotFound();
+            }
+
+            trip.PublishRequested = true;
+            db.SaveChanges();
+
+            TempData["Success"] = $"Request to publish trip \"{trip.Name}\" sent to admin.";
+            return RedirectToAction("Index");
+        
+        }
+
+        public class TripViewModel
+        {
+            public int TripId { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public bool Published { get; set; }
+            public double KmRange { get; set; }
+            public List<string> CityNames { get; set; } = new List<string>();
+            public List<ObjectiveInfo> Objectives { get; set; } = new List<ObjectiveInfo>();
+        }
+
+        public class ObjectiveInfo
+        {
+            public string Type { get; set; }
+            public string Name { get; set; }
+            public int Order { get; set; }
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
+        }
+    }
+}

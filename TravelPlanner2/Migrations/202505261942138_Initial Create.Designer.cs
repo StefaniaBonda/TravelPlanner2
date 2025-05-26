@@ -7,13 +7,13 @@ namespace TravelPlanner2.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class AdaugareOrdine : IMigrationMetadata
+    public sealed partial class InitialCreate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AdaugareOrdine));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
         
         string IMigrationMetadata.Id
         {
-            get { return "202505131237231_AdaugareOrdine"; }
+            get { return "202505261942138_Initial Create"; }
         }
         
         string IMigrationMetadata.Source

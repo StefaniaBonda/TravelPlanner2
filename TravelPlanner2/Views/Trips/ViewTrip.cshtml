@@ -50,6 +50,7 @@
         }
     </style>
 }
+
 <h2>Your Trip Details</h2>
 <div id="tripSummary">
     <p>Trip Locations: (Drag and drop to reorder)</p>
@@ -57,6 +58,12 @@
     <button id="saveOrderBtn" style="display:none;">Save Location Order</button>
 </div>
 <div id="tripMap" style="height: 500px; width: 100%;"></div>
+
+<!-- ✅ Afișare distanță totală -->
+<div id="tripDistance" style="margin-top: 10px; font-weight: bold; text-align: center;">
+    Total distance: calculating...
+</div>
+
 <div class="trip-actions" style="margin-top: 20px; text-align: center;">
     <a href="/Trips/ContinueTrip" class="btn btn-primary">Add More Locations</a>
     <a href="/SaveTrip/SaveTrip" class="btn btn-primary">Save Trip Details</a>
@@ -66,33 +73,21 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Create map centered on Romania
             const tripMap = L.map('tripMap').setView([45.9432, 24.9668], 6);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(tripMap);
 
-            // Elements
             const locationsList = document.getElementById('locationsList');
             const saveOrderBtn = document.getElementById('saveOrderBtn');
 
-            // Variables to store state
             let locations = [];
             let markers = [];
             let routeLine = null;
 
-            // Fetch trip locations
             fetch('/Trips/GetTripLocations')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(fetchedLocations => {
-                    console.log("Fetched locations:", fetchedLocations);
-
-                    // Store locations
                     locations = fetchedLocations;
 
                     if (locations.length === 0) {
@@ -100,19 +95,12 @@
                         return;
                     }
 
-                    // Clear any existing items
                     locationsList.innerHTML = '';
-
-                    // Add markers and create list items
                     const bounds = [];
 
                     locations.forEach((location, index) => {
-                        if (!location.Latitude || !location.Longitude) {
-                            console.error('Invalid location data:', location);
-                            return;
-                        }
+                        if (!location.Latitude || !location.Longitude) return;
 
-                        // Create marker
                         const marker = L.marker([location.Latitude, location.Longitude])
                             .addTo(tripMap)
                             .bindPopup(`
@@ -121,21 +109,15 @@
                                     Description: ${location.Description || 'No description'}
                                 `);
 
-                        // Store markers for later
                         markers.push(marker);
 
-                        // Create list item
                         const li = document.createElement('li');
                         li.setAttribute('draggable', 'true');
                         li.dataset.index = index;
                         li.innerHTML = `
                                 <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
-                                <div class="reorder-controls">
-                                    <span>&#9776;</span>
-                                </div>
+                                <div class="reorder-controls"><span>&#9776;</span></div>
                             `;
-
-                        // Add drag and drop event listeners
                         li.addEventListener('dragstart', handleDragStart);
                         li.addEventListener('dragover', handleDragOver);
                         li.addEventListener('drop', handleDrop);
@@ -143,78 +125,75 @@
                         li.addEventListener('dragleave', handleDragLeave);
                         li.addEventListener('dragend', handleDragEnd);
 
-                        // Add to list
                         locationsList.appendChild(li);
-
-                        // Add to bounds
                         bounds.push([location.Latitude, location.Longitude]);
                     });
 
-                    // Draw route line connecting all locations in order
                     drawRouteLine();
+                    updateTotalDistance(); // ✅ Apelează calculul distanței
 
-                    // Fit map to show all locations
                     if (bounds.length > 0) {
                         tripMap.fitBounds(bounds, { padding: [50, 50] });
                     }
 
-                    // Show save button if multiple locations
                     if (locations.length > 1) {
                         saveOrderBtn.style.display = 'block';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching trip locations:', error);
-                    locationsList.innerHTML = '<li style="color:red">Error loading locations. Please try refreshing the page.</li>';
+                    locationsList.innerHTML = '<li style="color:red">Error loading locations.</li>';
                 });
 
-            // Draw route line connecting locations in order
-            function drawRouteLine() {
-                // Remove existing line if any
-                if (routeLine) {
-                    tripMap.removeLayer(routeLine);
+            // ✅ Calculează distanța în km între 2 puncte
+            function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+
+            // ✅ Total distanță
+            function updateTotalDistance() {
+                let total = 0;
+                for (let i = 0; i < locations.length - 1; i++) {
+                    const from = locations[i];
+                    const to = locations[i + 1];
+                    if (from.Latitude && from.Longitude && to.Latitude && to.Longitude) {
+                        total += calculateDistanceKm(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
+                    }
                 }
+                const distanceDiv = document.getElementById('tripDistance');
+                if (distanceDiv) {
+                    distanceDiv.textContent = `Total distance: ${total.toFixed(2)} km`;
+                }
+            }
 
-                // Create line coordinates
+            function drawRouteLine() {
+                if (routeLine) tripMap.removeLayer(routeLine);
                 const routePoints = locations.map(loc => [loc.Latitude, loc.Longitude]);
-
                 if (routePoints.length >= 2) {
                     routeLine = L.polyline(routePoints, {
                         color: 'blue',
                         weight: 3,
                         opacity: 0.6,
-                        dashArray: '10, 10',
-                        id: 'routeLine'
+                        dashArray: '10, 10'
                     }).addTo(tripMap);
                 }
             }
 
-            // Update list numbering
-            function updateListNumbering() {
-                Array.from(locationsList.children).forEach((li, idx) => {
-                    const span = li.querySelector('span');
-                    if (span) {
-                        const text = span.textContent;
-                        span.textContent = text.replace(/^\d+\./, `${idx + 1}.`);
-                    }
-                    li.dataset.index = idx;
-                });
-            }
-
-            // Drag and drop variables
             let draggedItem = null;
             let draggedIdx = null;
 
-            // Drag and drop event handlers
             function handleDragStart(e) {
                 draggedItem = this;
                 draggedIdx = parseInt(this.dataset.index);
-
-                // Set drag data
                 e.dataTransfer.effectAllowed = 'move';
                 e.dataTransfer.setData('text/html', this.innerHTML);
-
-                // Style
                 setTimeout(() => this.classList.add('dragging'), 0);
             }
 
@@ -234,21 +213,12 @@
 
             function handleDrop(e) {
                 e.preventDefault();
-
-                // Only proceed if dropping on a different item
                 if (draggedItem !== this) {
-                    // Get target index
                     const targetIdx = parseInt(this.dataset.index);
-
-                    // Reorder locations array
                     const [movedLocation] = locations.splice(draggedIdx, 1);
                     locations.splice(targetIdx, 0, movedLocation);
-
-                    // Reorder markers array
                     const [movedMarker] = markers.splice(draggedIdx, 1);
                     markers.splice(targetIdx, 0, movedMarker);
-
-                    // Redraw the locations list
                     locationsList.innerHTML = '';
                     locations.forEach((location, index) => {
                         const li = document.createElement('li');
@@ -256,49 +226,35 @@
                         li.dataset.index = index;
                         li.innerHTML = `
                                 <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
-                                <div class="reorder-controls">
-                                    <span>&#9776;</span>
-                                </div>
+                                <div class="reorder-controls"><span>&#9776;</span></div>
                             `;
-
-                        // Add event listeners
                         li.addEventListener('dragstart', handleDragStart);
                         li.addEventListener('dragover', handleDragOver);
                         li.addEventListener('drop', handleDrop);
                         li.addEventListener('dragenter', handleDragEnter);
                         li.addEventListener('dragleave', handleDragLeave);
                         li.addEventListener('dragend', handleDragEnd);
-
                         locationsList.appendChild(li);
                     });
-
-                    // Redraw route line
                     drawRouteLine();
-
-                    // Show save button
-                    saveOrderBtn.style.display = 'block';
+                    updateTotalDistance(); // ✅ Actualizează distanța după reordonare
                 }
-
                 return false;
             }
 
             function handleDragEnd(e) {
-                // Clear classes
                 Array.from(locationsList.children).forEach(li => {
                     li.classList.remove('over', 'dragging');
                 });
             }
 
-            // Save order button click handler
             saveOrderBtn.addEventListener('click', function () {
-                // Create order data to send to server
                 const orderData = locations.map(loc => ({
                     Type: loc.Type,
                     Name: loc.Name,
                     City: loc.City
                 }));
 
-                // Send to server
                 fetch('/Trips/SaveLocationOrder', {
                     method: 'POST',
                     headers: {

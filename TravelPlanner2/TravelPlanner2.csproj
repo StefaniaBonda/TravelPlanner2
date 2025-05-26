@@ -124,6 +124,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BuildingsController.cs" />
     <Compile Include="Controllers\ConnectionBuildingsController.cs" />
     <Compile Include="Controllers\ConnectionCulinariesController.cs" />
@@ -293,6 +294,10 @@
     <Content Include="Views\Users\EditProfile.cshtml" />
     <Content Include="Views\Users\Profile.cshtml" />
     <Content Include="Views\SaveTrip\SaveTrip.cshtml" />
+    <Content Include="Views\Admin\AdminDashboard.cshtml" />
+    <Content Include="Views\Admin\PublishRequests.cshtml" />
+    <Content Include="Views\Admin\ManageTrips.cshtml" />
+    <Content Include="Views\Admin\ManageUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

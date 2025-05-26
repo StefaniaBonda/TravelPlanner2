@@ -47,6 +47,7 @@ namespace TravelPlanner2.Controllers
             // Creează ViewModel-ul
             var viewModel = new SaveTripViewModel
             {
+                kmRange = trip.kmRange,
                 TripId = trip.Id,
                 Name = trip.Name,
                 Description = trip.Description,
@@ -85,6 +86,7 @@ namespace TravelPlanner2.Controllers
             // Actualizează proprietățile
             trip.Name = model.Name;
             trip.Description = model.Description;
+            trip.kmRange = model.kmRange;
 
             // Gestionează Favorite
             var existingFavorite = db.Favorites.FirstOrDefault(f => f.UserId == currentUserId.Value && f.TripId == trip.Id);
@@ -194,6 +196,7 @@ namespace TravelPlanner2.Controllers
             public string Description { get; set; }
 
             public bool IsFavorite { get; set; }
+            public double kmRange { get; set; }
         }
     }
 }

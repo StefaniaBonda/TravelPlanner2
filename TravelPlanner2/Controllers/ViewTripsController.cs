@@ -27,10 +27,9 @@ namespace TravelPlanner2.Controllers
                     Name = t.Name,
                     Description = t.Description,
                     Published = t.Published,
-                    Price = t.price,
                     KmRange = t.kmRange,
-                    TimeRange = t.timeRange,
-                    CityNames = GetCitiesForTrip(t.Id)
+                    CityNames = GetCitiesForTrip(t.Id),
+                    Objectives = GetObjectivesForTrip(t.Id)
                 })
                 .ToList();
 
@@ -41,31 +40,55 @@ namespace TravelPlanner2.Controllers
         {
             var cities = new List<string>();
 
-            var buildingCities = db.ConnectionBuildingss
-                .Where(cb => cb.TripId == tripId)
-                .Select(cb => cb.Buildings.City);
+            cities.AddRange(db.ConnectionBuildingss.Where(c => c.TripId == tripId).Select(c => c.Buildings.City));
+            cities.AddRange(db.ConnectionCulinaries.Where(c => c.TripId == tripId).Select(c => c.Culinary.City));
+            cities.AddRange(db.ConnectionNatures.Where(c => c.TripId == tripId).Select(c => c.Nature.City));
+            cities.AddRange(db.ConnectionCulturals.Where(c => c.TripId == tripId).Select(c => c.Cultural.City));
 
-            var culinaryCities = db.ConnectionCulinaries
-                .Where(cc => cc.TripId == tripId)
-                .Select(cc => cc.Culinary.City);
+            return cities.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList();
+        }
 
-            var natureCities = db.ConnectionNatures
-                .Where(cn => cn.TripId == tripId)
-                .Select(cn => cn.Nature.City);
+        private List<ObjectiveInfo> GetObjectivesForTrip(int tripId)
+        {
+            var objectives = new List<ObjectiveInfo>();
 
-            var culturalCities = db.ConnectionCulturals
-                .Where(cc => cc.TripId == tripId)
-                .Select(cc => cc.Cultural.City);
+            objectives.AddRange(db.ConnectionBuildingss.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Building",
+                Name = c.Buildings.Name,
+                Latitude = c.Buildings.Latitude,
+                Longitude = c.Buildings.Longitude,
+                Order = c.Order
+            }));
 
-            cities.AddRange(buildingCities);
-            cities.AddRange(culinaryCities);
-            cities.AddRange(natureCities);
-            cities.AddRange(culturalCities);
+            objectives.AddRange(db.ConnectionCulinaries.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Culinary",
+                Name = c.Culinary.Name,
+                Latitude = c.Culinary.Latitude,
+                Longitude = c.Culinary.Longitude,
+                Order = c.Order
+            }));
 
-            return cities
-                .Where(c => !string.IsNullOrWhiteSpace(c))
-                .Distinct()
-                .ToList();
+            objectives.AddRange(db.ConnectionNatures.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Nature",
+                Name = c.Nature.Name,
+                Latitude = c.Nature.Latitude,
+                Longitude = c.Nature.Longitude,
+                Order = c.Order
+            }));
+
+            objectives.AddRange(db.ConnectionCulturals.Where(c => c.TripId == tripId).Select(c => new ObjectiveInfo
+            {
+                Type = "Cultural",
+                Name = c.Cultural.Name,
+                Latitude = c.Cultural.Latitude,
+                Longitude = c.Cultural.Longitude,
+                Order = c.Order
+            }));
+
+            return objectives.OrderBy(o => o.Order).ToList();
         }
 
         [HttpPost]
@@ -94,11 +117,18 @@ namespace TravelPlanner2.Controllers
             public string Name { get; set; }
             public string Description { get; set; }
             public bool Published { get; set; }
-            public double Price { get; set; }
             public double KmRange { get; set; }
-            public double TimeRange { get; set; }
-
             public List<string> CityNames { get; set; } = new List<string>();
+            public List<ObjectiveInfo> Objectives { get; set; } = new List<ObjectiveInfo>();
+        }
+
+        public class ObjectiveInfo
+        {
+            public string Type { get; set; }
+            public string Name { get; set; }
+            public int Order { get; set; }
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
         }
     }
 }

@@ -195,20 +195,19 @@
     <Compile Include="Migrations\202505241100419_MakeNewFieldsOptional.Designer.cs">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
     </Compile>
-<<<<<<< HEAD
-    <Compile Include="Migrations\202505261601156_AddProfilePicturePath.cs" />
-    <Compile Include="Migrations\202505261601156_AddProfilePicturePath.Designer.cs">
-      <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.cs" />
-    <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.Designer.cs">
-      <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
-=======
-    <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.cs" />
-    <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.Designer.cs">
-      <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
->>>>>>> a804a33d4b30b9f860167676263e64bd35f742b8
-    </Compile>
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.cs" />
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.Designer.cs">
+		  <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.cs" />
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.Designer.cs">
+		  <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.cs" />
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.Designer.cs">
+		  <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
+	  </Compile>
+
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Buildings.cs" />
     <Compile Include="Models\ConnectionBuildings.cs" />
@@ -351,12 +350,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-<<<<<<< HEAD
-    <Folder Include="Uploads\ProfilePictures\" />
-    <Folder Include="Views\UserDashbourd\" />
-=======
-    <Folder Include="Views\Guest\" />
->>>>>>> a804a33d4b30b9f860167676263e64bd35f742b8
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.cs" />
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.Designer.cs">
+		  <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.cs" />
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.Designer.cs">
+		  <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.cs" />
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.Designer.cs">
+		  <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
+	  </Compile>
+
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -401,17 +407,19 @@
     <EmbeddedResource Include="Migrations\202505241100419_MakeNewFieldsOptional.resx">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
     </EmbeddedResource>
-<<<<<<< HEAD
-    <EmbeddedResource Include="Migrations\202505261601156_AddProfilePicturePath.resx">
-      <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202505261609283_AddProfilePictureToUser.resx">
-      <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
-=======
-    <EmbeddedResource Include="Migrations\202505261659351_AddPublishRequestedToTrip.resx">
-      <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
->>>>>>> a804a33d4b30b9f860167676263e64bd35f742b8
-    </EmbeddedResource>
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.cs" />
+	  <Compile Include="Migrations\202505261601156_AddProfilePicturePath.Designer.cs">
+		  <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.cs" />
+	  <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.Designer.cs">
+		  <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.cs" />
+	  <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.Designer.cs">
+		  <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
+	  </Compile>
+
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

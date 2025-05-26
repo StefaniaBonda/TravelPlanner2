@@ -121,8 +121,13 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        public ActionResult GuestPage()
+        {   
+            var trips = new List<ViewTripsController.TripViewModel>();
+            return View(trips);
+        }
 
-       
+
 
 
     }

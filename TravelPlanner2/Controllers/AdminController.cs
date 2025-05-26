@@ -21,13 +21,34 @@ namespace TravelPlanner2.Controllers
             }
             return View();
         }
-        // GET: Admin/PublishRequests
-        public ActionResult PublishRequests()
+       
+
+        public ActionResult PendingTrips()
         {
-            // TODO: Fetch and return publish requests
-            return View();
+            var pendingTrips = db.Trips
+                .Where(t => t.PublishRequested && !t.Published)
+                .ToList();
+
+            return View(pendingTrips);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ApprovePublish(int tripId)
+        {
+            var trip = db.Trips.FirstOrDefault(t => t.Id == tripId);
+            if (trip == null)
+            {
+                return HttpNotFound();
+            }
+
+            trip.Published = true;
+            trip.PublishRequested = false;
+            db.SaveChanges();
+
+            TempData["Success"] = $"Trip \"{trip.Name}\" has been published.";
+            return RedirectToAction("PendingTrips");
+        }
         // GET: Admin/ManageTrips
         public ActionResult ManageTrips()
         {

@@ -27,5 +27,7 @@ namespace TravelPlanner2.Models
         public string Description { get; set; } // Removed nullable reference type
 
         public bool Published { get; set; } = false;
+        public bool PublishRequested { get; set; }
+
     }
 }

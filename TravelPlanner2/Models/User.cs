@@ -16,8 +16,12 @@ namespace TravelPlanner2.Models
         public string Password { get; set; }
         [Required]
         public string Role { get; set; } // "Admin", "User" or "Guest"
+        [StringLength(255)]
+        public string ProfilePicturePath { get; set; }
 
-      
+
+
+
 
     }
 }

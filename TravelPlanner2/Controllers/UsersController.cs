@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -14,36 +15,28 @@ namespace TravelPlanner2.Controllers
     {
         private MyDBContext db = new MyDBContext();
 
-        // GET: Users
         public ActionResult Index()
         {
             return View(db.Users.ToList());
         }
 
-        // GET: Users/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             User user = db.Users.Find(id);
             if (user == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(user);
         }
 
-        // GET: Users/Create
         public ActionResult Create()
         {
             return View(new User());
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Email,Password,Role")] User user)
@@ -58,24 +51,18 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
-        // GET: Users/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             User user = db.Users.Find(id);
             if (user == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(user);
         }
 
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Email,Password,Role")] User user)
@@ -86,25 +73,22 @@ namespace TravelPlanner2.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+
             return View(user);
         }
 
-        // GET: Users/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             User user = db.Users.Find(id);
             if (user == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(user);
         }
 
-        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -118,14 +102,10 @@ namespace TravelPlanner2.Controllers
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
-       
-        // Action for the View Profile button
         public ActionResult Profile()
         {
             var sessionUser = Session["User"] as User;
@@ -136,7 +116,7 @@ namespace TravelPlanner2.Controllers
             if (user == null)
                 return HttpNotFound();
 
-            return View(user); // Create Views/Users/Profile.cshtml
+            return View(user);
         }
 
         public ActionResult EditProfile()
@@ -149,13 +129,14 @@ namespace TravelPlanner2.Controllers
             if (user == null)
                 return HttpNotFound();
 
-            return View("EditProfile", user); // Reuse your existing Edit.cshtml view
+            ViewBag.AvatarOptions = GetAvatarOptions();
+
+            return View("EditProfile", user);
         }
 
-        // POST: Users/EditProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditProfile([Bind(Include = "Id,Name,Email,Password,Role")] User updatedUser)
+        public ActionResult EditProfile([Bind(Include = "Id,Name,Email,Password,Role")] User updatedUser, string SelectedAvatar)
         {
             var sessionUser = Session["User"] as User;
             if (sessionUser == null)
@@ -167,27 +148,56 @@ namespace TravelPlanner2.Controllers
 
             string currentPassword = Request["CurrentPassword"];
 
-            // If password was changed, check current password
+            if (string.IsNullOrEmpty(updatedUser.Password))
+            {
+                updatedUser.Password = userInDb.Password;
+            }
+
             if (updatedUser.Password != userInDb.Password)
             {
                 if (string.IsNullOrEmpty(currentPassword) || currentPassword != userInDb.Password)
                 {
                     ModelState.AddModelError("", "Incorrect current password. Changes not saved.");
+                    ViewBag.AvatarOptions = GetAvatarOptions();
                     return View("EditProfile", updatedUser);
                 }
             }
 
-            // Update other fields
             userInDb.Name = updatedUser.Name;
             userInDb.Email = updatedUser.Email;
+            userInDb.Password = updatedUser.Password;
 
-            if (updatedUser.Password != userInDb.Password)
-                userInDb.Password = updatedUser.Password;
+            if (!string.IsNullOrEmpty(SelectedAvatar))
+            {
+                userInDb.ProfilePicturePath = SelectedAvatar;
+            }
 
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var error in validationErrors.ValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(
+                            $"[VALIDATION ERROR] Property: {error.PropertyName} - Error: {error.ErrorMessage}");
+                    }
+                }
+
+                throw;
+            }
             Session["User"] = userInDb;
-
             return RedirectToAction("Profile");
+        }
+
+        private List<string> GetAvatarOptions()
+        {
+            var directoryPath = Server.MapPath("~/Uploads/ProfilePictures");
+            var filePaths = Directory.GetFiles(directoryPath);
+            return filePaths.Select(f => "~/Uploads/ProfilePictures/" + Path.GetFileName(f)).ToList();
         }
     }
 }

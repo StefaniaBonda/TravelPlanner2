@@ -323,3 +323,111 @@ ul {
     }
 
 /*Sa nu se modifice nimic pana aici!!!!!!!*/
+/* Stiluri pentru containerul galeriei de imagini */
+.container-imagini {
+    display: flex; /* Folosim Flexbox pentru a aranja imaginile pe un singur rând */
+    justify-content: space-around; /* Distribuie spațiu egal între imagini și la capete */
+    align-items: flex-start; /* Aliniază imaginile de sus, dacă au înălțimi diferite (chiar dacă am setat height:auto) */
+    flex-wrap: wrap; /* Permite imaginilor să treacă pe rândul următor pe ecrane mici */
+    gap: 15px; /* Adaugă un spațiu consistent între imagini */
+    margin-top: 20px; /* Spațiu deasupra galeriei */
+    margin-bottom: 40px; /* Spațiu sub galerie */
+}
+
+/* Stiluri pentru fiecare imagine din galerie */
+.imagine {
+    width: 220px; /* Setează o lățime fixă pentru fiecare imagine */
+    height: auto; /* Înălțimea se ajustează proporțional pentru a menține aspectul original */
+    border-radius: 8px; /* Colțuri rotunjite pentru un aspect mai plăcut */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* O umbră subtilă pentru a le evidenția */
+    object-fit: cover; /* Asigură că imaginea acoperă spațiul alocat fără distorsiuni */
+    transition: transform 0.3s ease-in-out; /* Adaugă o tranziție lină la hover */
+}
+
+    /* Efect la hover pentru imagini */
+    .imagine:hover {
+        transform: scale(1.05); /* Mărește ușor imaginea la hover */
+    }
+
+/* Stiluri adiționale pentru secțiunea galeriei, dacă este necesar */
+.team-gallery {
+    text-align: center; /* Centrează titlul galeriei */
+    margin-top: 50px; /* Spațiu deasupra secțiunii galeriei */
+}
+
+.gallery-title {
+    font-size: 2em; /* Dimensiunea fontului pentru titlul galeriei */
+    color: #333; /* Culoarea titlului */
+    margin-bottom: 20px; /* Spațiu sub titlu */
+}
+
+/* Poți adăuga și stiluri pentru `about-section`, `about-intro` etc. dacă nu le ai deja */
+.about-section {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.about-app-highlight {
+    background-color: #f8f8f8;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.app-slogan {
+    font-size: 1.8em;
+    color: #4CAF50; /* O culoare vibrantă */
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.app-description {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.app-closing {
+    font-style: italic;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.start-journey-button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .start-journey-button:hover {
+        background-color: #0056b3;
+    }
+
+.about-title {
+    font-size: 2.5em;
+    color: #222;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.about-description {
+    font-size: 1.1em;
+    color: #444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.about-subtitle {
+    font-size: 1em;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+}

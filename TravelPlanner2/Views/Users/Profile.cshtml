@@ -5,13 +5,61 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Your Profile</h2>
+@section Styles {
+    <style>
+        .profile-card {
+            background-color: #fdfaf3;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            margin: 60px auto;
+            text-align: center;
+        }
 
-<p><strong>Name:</strong> @Model.Name</p>
-<p><strong>Email:</strong> @Model.Email</p>
-<p><strong>Role:</strong> @Model.Role</p>
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid #4a5a6a;
+        }
 
-<a href="@Url.Action("EditProfile", "Users")" class="btn btn-primary">Edit Profile</a>
+        .btn-custom {
+            background-color: #4a5a6a;
+            color: white;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+            margin: 5px;
+        }
+
+            .btn-custom:hover {
+                background-color: #0a2342;
+                color: #fff;
+            }
+    </style>
+}
+
+<div class="profile-card">
+    <img src="@Url.Content(string.IsNullOrEmpty(Model.ProfilePicturePath) ? "~/Uploads/ProfilePictures/default.png" : Model.ProfilePicturePath)"
+         alt="Profile Picture"
+         class="profile-picture"
+         onerror="this.src='/Uploads/ProfilePictures/default.png';" />
 
 
+    <h2 class="text-primary fw-bold mb-3">Your Profile</h2>
 
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Role:</strong> @Model.Role</p>
+
+    @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+    {
+        <p class="text-muted small">Image: @System.IO.Path.GetFileName(Model.ProfilePicturePath)</p>
+    }
+
+    <a href="@Url.Action("EditProfile", "Users")" class="btn btn-custom">Edit Profile</a>
+    <a href="/Account/Logout" class="btn btn-outline-danger">Log out</a>
+</div>

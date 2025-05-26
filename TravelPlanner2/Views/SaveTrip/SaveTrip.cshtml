@@ -1,150 +1,184 @@
 ﻿@model TravelPlanner2.Controllers.SaveTripController.SaveTripViewModel
 @{
     ViewBag.Title = "Save Trip Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        #tripMap {
-            height: 500px;
-            width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        .number-icon {
-            background: #2A81CB;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            font-weight: bold;
-            line-height: 30px;
-            width: 30px;
-            height: 30px;
-            box-shadow: 0 0 2px #333;
-        }
-    </style>
-}
-
-<div class="container my-5">
-    <h2 class="mb-4">Save Trip Details</h2>
-    <div class="row g-4">
-        <div class="col-md-6">
-            @using (Html.BeginForm("SaveTrip", "SaveTrip", FormMethod.Post))
+<div class="main-layout">
+    <div class="form-map-wrapper">
+        <div class="form-container styled-form">
+            <h2 class="text-center text-primary fw-bold mb-4">Save Trip Details</h2>
+            @using (Html.BeginForm("SaveTrip", "SaveTrip", FormMethod.Post, new { id = "saveTripForm" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.TripId)
 
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            @Html.LabelFor(model => model.Name, new { @class = "form-label" })
-                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                        </div>
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.Name, new { @class = "form-label fw-semibold" })
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
 
-                        <div class="mb-3">
-                            @Html.LabelFor(model => model.Description, new { @class = "form-label" })
-                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                        </div>
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.Description, new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
 
-                        <div class="form-check mb-3">
-                            @Html.CheckBoxFor(model => model.IsFavorite, new { @class = "form-check-input" })
-                            @Html.LabelFor(model => model.IsFavorite, new { @class = "form-check-label" })
-                        </div>
+                <div class="form-check mb-4">
+                    @Html.CheckBoxFor(model => model.IsFavorite, new { @class = "form-check-input" })
+                    @Html.LabelFor(model => model.IsFavorite, new { @class = "form-check-label" })
+                </div>
 
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success w-75 rounded-pill shadow">💾 Save Trip</button>
                 </div>
             }
         </div>
+        <div id="tripMap"></div>
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <div id="tripMap"></div>
+<div class="toast-container">
+    <div id="saveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" data-bs-autohide="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Trip saved successfully! 🎉
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-layout {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-map-wrapper {
+            display: flex;
+            width: 95vw;
+            height: 90vh;
+            gap: 30px;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .form-container {
+            flex: 1;
+            max-width: 450px;
+            padding: 30px;
+            background-color: #d3d3d3;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        #tripMap {
+            flex: 2;
+            height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.polylineDecorator/1.7.0/leaflet.polylineDecorator.min.js"></script>
-
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const map = L.map('tripMap').setView([45.9432, 24.9668], 6);
+        document.addEventListener("DOMContentLoaded", function () {
+            const map = L.map('tripMap').setView([45.9432, 24.9668], 6);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
 
-        const tripId = @Html.Raw(Model.TripId);
+            const tripId = @Html.Raw(Model.TripId);
 
-        const endpoints = [
-            `/SaveTrip/GetOrderedCulinaryLocations?tripId=${tripId}`,
-            `/SaveTrip/GetOrderedBuildingLocations?tripId=${tripId}`,
-            `/SaveTrip/GetOrderedNatureLocations?tripId=${tripId}`,
-            `/SaveTrip/GetOrderedCulturalLocations?tripId=${tripId}`
-        ];
+            const endpoints = [
+                `/SaveTrip/GetOrderedCulinaryLocations?tripId=${tripId}`,
+                `/SaveTrip/GetOrderedBuildingLocations?tripId=${tripId}`,
+                `/SaveTrip/GetOrderedNatureLocations?tripId=${tripId}`,
+                `/SaveTrip/GetOrderedCulturalLocations?tripId=${tripId}`
+            ];
 
-        Promise.all(endpoints.map(url => fetch(url).then(res => res.json())))
-            .then(allData => {
-                const allLocations = allData.flat(); // Combinăm toate obiectivele într-o singură listă
-                if (!allLocations.length) return;
+            Promise.all(endpoints.map(url => fetch(url).then(res => res.json())))
+                .then(allData => {
+                    const allLocations = allData.flat();
+                    if (!allLocations.length) return;
 
-                const latlngs = [];
+                    const latlngs = [];
 
-                allLocations.forEach((loc, index) => {
-                    const coords = [loc.Latitude, loc.Longitude];
-                    latlngs.push(coords);
+                    allLocations.forEach((loc, index) => {
+                        const coords = [loc.Latitude, loc.Longitude];
+                        latlngs.push(coords);
 
-                    L.marker(coords, {
-                        icon: L.divIcon({
-                            className: 'custom-div-icon',
-                            html: `<div class="number-icon">${index + 1}</div>`,
-                            iconSize: [30, 42],
-                            iconAnchor: [15, 42]
-                        })
-                    }).addTo(map)
-                      .bindPopup(`<strong>${loc.Name}</strong><br>${loc.Description}`);
+                        L.marker(coords, {
+                            icon: L.divIcon({
+                                className: 'custom-div-icon',
+                                html: `<div class="number-icon">${index + 1}</div>`,
+                                iconSize: [30, 42],
+                                iconAnchor: [15, 42]
+                            })
+                        }).addTo(map)
+                          .bindPopup(`<strong>${loc.Name}</strong><br>${loc.Description}`);
+                    });
+
+                    const polyline = L.polyline(latlngs, {
+                        color: 'blue',
+                        weight: 4,
+                        opacity: 0.7
+                    }).addTo(map);
+
+                    L.polylineDecorator(polyline, {
+                        patterns: [
+                            {
+                                offset: '5%',
+                                repeat: '15%',
+                                symbol: L.Symbol.arrowHead({
+                                    pixelSize: 10,
+                                    pathOptions: { color: 'darkblue', fillOpacity: 1, weight: 2 }
+                                })
+                            }
+                        ]
+                    }).addTo(map);
+
+                    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+                })
+                .catch(err => {
+                    console.error("Eroare la încărcarea locațiilor:", err);
                 });
 
-                const polyline = L.polyline(latlngs, {
-                    color: 'blue',
-                    weight: 4,
-                    opacity: 0.7
-                }).addTo(map);
-
-                L.polylineDecorator(polyline, {
-                    patterns: [
-                        {
-                            offset: '5%',
-                            repeat: '15%',
-                            symbol: L.Symbol.arrowHead({
-                                pixelSize: 10,
-                                pathOptions: { color: 'darkblue', fillOpacity: 1, weight: 2 }
-                            })
-                        }
-                    ]
-                }).addTo(map);
-
-                map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
-
-                if (latlngs.length) {
-                    const bounds = L.latLngBounds(latlngs);
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                }
-
-            })
-
-
-            .catch(err => console.error("Eroare la încărcarea locațiilor:", err));
-    });
+            document.getElementById("saveTripForm").addEventListener("submit", function (e) {
+                setTimeout(() => {
+                    const toastEl = document.getElementById('saveToast');
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }, 200);
+            });
+        });
     </script>
-
 }

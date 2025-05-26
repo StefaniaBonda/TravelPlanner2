@@ -159,6 +159,14 @@
     <Compile Include="Migrations\202505241100419_MakeNewFieldsOptional.Designer.cs">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505261601156_AddProfilePicturePath.cs" />
+    <Compile Include="Migrations\202505261601156_AddProfilePicturePath.Designer.cs">
+      <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.cs" />
+    <Compile Include="Migrations\202505261609283_AddProfilePictureToUser.Designer.cs">
+      <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Buildings.cs" />
     <Compile Include="Models\ConnectionBuildings.cs" />
@@ -296,6 +304,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\ProfilePictures\" />
     <Folder Include="Views\UserDashbourd\" />
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +349,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505241100419_MakeNewFieldsOptional.resx">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505261601156_AddProfilePicturePath.resx">
+      <DependentUpon>202505261601156_AddProfilePicturePath.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505261609283_AddProfilePictureToUser.resx">
+      <DependentUpon>202505261609283_AddProfilePictureToUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

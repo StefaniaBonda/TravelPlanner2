@@ -334,6 +334,7 @@
     <Content Include="Views\Admin\ManageTrips.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
+    <Content Include="Views\Home\GuestPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,43 @@
+﻿@model List<TravelPlanner2.Models.Trip>
+
+@{
+    ViewBag.Title = "Pending Trip Publications";
+}
+
+<h2>Trips Awaiting Publication</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>UserId</th>
+            <th>Km Range</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var trip in Model)
+        {
+            <tr>
+                <td>@trip.Name</td>
+                <td>@trip.Description</td>
+                <td>@trip.UserId</td>
+                <td>@trip.kmRange</td>
+                <td>
+                    @using (Html.BeginForm("ApprovePublish", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("tripId", trip.Id)
+                        <button type="submit" class="btn btn-success btn-sm">Publish</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -195,6 +195,10 @@
     <Compile Include="Migrations\202505241100419_MakeNewFieldsOptional.Designer.cs">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.cs" />
+    <Compile Include="Migrations\202505261659351_AddPublishRequestedToTrip.Designer.cs">
+      <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Buildings.cs" />
     <Compile Include="Models\ConnectionBuildings.cs" />
@@ -330,14 +334,14 @@
     <Content Include="Views\Users\Profile.cshtml" />
     <Content Include="Views\SaveTrip\SaveTrip.cshtml" />
     <Content Include="Views\Admin\AdminDashboard.cshtml" />
-    <Content Include="Views\Admin\PublishRequests.cshtml" />
     <Content Include="Views\Admin\ManageTrips.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
-    <Content Include="Views\Home\GuestPage.cshtml" />
+    <Content Include="Views\Admin\PendingTrips.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Guest\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -381,6 +385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505241100419_MakeNewFieldsOptional.resx">
       <DependentUpon>202505241100419_MakeNewFieldsOptional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505261659351_AddPublishRequestedToTrip.resx">
+      <DependentUpon>202505261659351_AddPublishRequestedToTrip.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -107,8 +107,12 @@ namespace TravelPlanner2.Controllers
                 return HttpNotFound();
             }
 
+            trip.PublishRequested = true;
+            db.SaveChanges();
+
             TempData["Success"] = $"Request to publish trip \"{trip.Name}\" sent to admin.";
             return RedirectToAction("Index");
+        
         }
 
         public class TripViewModel

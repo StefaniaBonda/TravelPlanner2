@@ -82,9 +82,6 @@ namespace TravelPlanner2.Controllers
 
             trip.Name = model.Name;
             trip.Description = model.Description;
-            // trip.kmRange is up-to-date
-
-           
           
 
             db.Entry(trip).State = EntityState.Modified;

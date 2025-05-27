@@ -6,7 +6,7 @@
 <div class="hero-section">
     <h1>Sign In to TripTide</h1>
 
-    <!-- Verificăm dacă există erori în ModelState și le afișăm -->
+    <!-- Verify if there are ModelState errors and we display them -->
     @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
     {
         <div class="alert alert-danger">

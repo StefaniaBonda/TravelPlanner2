@@ -69,14 +69,14 @@ namespace TravelPlanner2.Controllers
         [HttpPost]
         public ActionResult SignUp(string name, string email, string password, string confirmPassword)
         {
-            // Verificare ca parolele sa fie identice
+            // Verify if the passeord match 
             if (password != confirmPassword)
             {
                 ModelState.AddModelError("", "The passwords don't match.");
                 return View();
             }
 
-            // Verificare daca useru-ul nu exista deja
+            // Verify if the user doesn't already exist
             if (db.Users.Any(u => u.Email == email))
             {
                 ModelState.AddModelError("", "A user with this email already exists.");

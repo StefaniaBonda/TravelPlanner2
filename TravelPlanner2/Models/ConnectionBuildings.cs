@@ -10,8 +10,8 @@ public class ConnectionBuildings
     [ForeignKey("Trip")]
      
     public int TripId { get; set; }
-    public Trip Trip { get; set; } // Corrected property name to match ForeignKey attribute
+    public Trip Trip { get; set; } 
     [ForeignKey("Buildings")]
     public int BuildingsId { get; set; }
-    public Buildings Buildings { get; set; } // Corrected property name to match ForeignKey attribute
+    public Buildings Buildings { get; set; } 
 }

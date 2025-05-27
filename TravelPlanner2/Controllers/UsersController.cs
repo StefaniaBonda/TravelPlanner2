@@ -13,13 +13,16 @@ namespace TravelPlanner2.Controllers
 {
     public class UsersController : Controller
     {
+        // Database context to access the application's data
         private MyDBContext db = new MyDBContext();
 
+        // GET: Users - Display list of all users
         public ActionResult Index()
         {
             return View(db.Users.ToList());
         }
 
+        // GET: Users/Details/5 - Show details of a specific user
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -32,11 +35,13 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // GET: Users/Create - Render user creation form
         public ActionResult Create()
         {
             return View(new User());
         }
 
+        // POST: Users/Create - Handle form submission to create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Email,Password,Role")] User user)
@@ -51,6 +56,7 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // GET: Users/Edit/5 - Render form to edit an existing user
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -63,6 +69,7 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // POST: Users/Edit - Handle form submission to update user details
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Email,Password,Role")] User user)
@@ -77,6 +84,7 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // GET: Users/Delete/5 - Confirm deletion of a user
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -89,6 +97,7 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // POST: Users/DeleteConfirmed - Final deletion of a user
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -99,6 +108,7 @@ namespace TravelPlanner2.Controllers
             return RedirectToAction("Index");
         }
 
+        // Clean up database resources when the controller is disposed
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -106,6 +116,7 @@ namespace TravelPlanner2.Controllers
             base.Dispose(disposing);
         }
 
+        // GET: Users/Profile - Show current user's profile
         public ActionResult Profile()
         {
             var sessionUser = Session["User"] as User;
@@ -119,6 +130,7 @@ namespace TravelPlanner2.Controllers
             return View(user);
         }
 
+        // GET: Users/EditProfile - Show form to edit the current user's profile
         public ActionResult EditProfile()
         {
             var sessionUser = Session["User"] as User;
@@ -129,11 +141,12 @@ namespace TravelPlanner2.Controllers
             if (user == null)
                 return HttpNotFound();
 
-            ViewBag.AvatarOptions = GetAvatarOptions();
+            ViewBag.AvatarOptions = GetAvatarOptions(); // Provide available avatar images
 
             return View("EditProfile", user);
         }
 
+        // POST: Users/EditProfile - Save changes to current user's profile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditProfile([Bind(Include = "Id,Name,Email,Password,Role")] User updatedUser, string SelectedAvatar)
@@ -148,11 +161,13 @@ namespace TravelPlanner2.Controllers
 
             string currentPassword = Request["CurrentPassword"];
 
+            // Preserve existing password if new one is not provided
             if (string.IsNullOrEmpty(updatedUser.Password))
             {
                 updatedUser.Password = userInDb.Password;
             }
 
+            // Validate password change
             if (updatedUser.Password != userInDb.Password)
             {
                 if (string.IsNullOrEmpty(currentPassword) || currentPassword != userInDb.Password)
@@ -163,15 +178,18 @@ namespace TravelPlanner2.Controllers
                 }
             }
 
+            // Update user fields
             userInDb.Name = updatedUser.Name;
             userInDb.Email = updatedUser.Email;
             userInDb.Password = updatedUser.Password;
 
+            // Update profile picture if a new avatar was selected
             if (!string.IsNullOrEmpty(SelectedAvatar))
             {
                 userInDb.ProfilePicturePath = SelectedAvatar;
             }
 
+            // Save changes to database and handle any validation errors
             try
             {
                 db.SaveChanges();
@@ -187,12 +205,15 @@ namespace TravelPlanner2.Controllers
                     }
                 }
 
-                throw;
+                throw; // Re-throw exception after logging
             }
+
+            // Update session with new user data
             Session["User"] = userInDb;
             return RedirectToAction("Profile");
         }
 
+        // Helper method to get all available avatar image file paths
         private List<string> GetAvatarOptions()
         {
             var directoryPath = Server.MapPath("~/Uploads/ProfilePictures");

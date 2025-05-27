@@ -21,8 +21,8 @@ namespace TravelPlanner2.Controllers
             }
             return View();
         }
-       
 
+        // Pending if the trip is not published yet but the user has requested to publish it
         public ActionResult PendingTrips()
         {
             var pendingTrips = db.Trips
@@ -34,6 +34,7 @@ namespace TravelPlanner2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        // Action to approve a trip for publishing if the trip is pending and not null
         public ActionResult ApprovePublish(int tripId)
         {
             var trip = db.Trips.FirstOrDefault(t => t.Id == tripId);
@@ -50,8 +51,8 @@ namespace TravelPlanner2.Controllers
             TempData["Success"] = $"Trip \"{trip.Name}\" has been published.";
             return RedirectToAction("PendingTrips");
         }
-      
 
+        // Redirects to the page where the admin can manage users (initial CRUDs)
         public ActionResult ManageUsers()
         {
             var users = db.Users.ToList();

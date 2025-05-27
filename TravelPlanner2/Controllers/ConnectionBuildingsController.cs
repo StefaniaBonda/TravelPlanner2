@@ -21,7 +21,7 @@ namespace TravelPlanner2.Controllers
             return View(connectionBuildingss.ToList());
         }
 
-        // GET: ConnectionBuildings/Details/5
+        // GET: ConnectionBuildings/Details
         public ActionResult Details(int? id)
         {
             if (id == null)

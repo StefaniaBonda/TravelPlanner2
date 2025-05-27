@@ -14,13 +14,12 @@ namespace TravelPlanner2.Controllers
     {
         private MyDBContext db = new MyDBContext();
 
-        // GET: Buildings
         public ActionResult Index()
         {
             return View(db.Buildingss.ToList());
         }
 
-        // GET: Buildings/Details/5
+        // Buildings details
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -35,13 +34,13 @@ namespace TravelPlanner2.Controllers
             return View(buildings);
         }
 
-        // GET: Buildings/Create
+        // Buildings Create
         public ActionResult Create()
         {
             return View(new Buildings());
         }
 
-        // POST: Buildings/Create
+        // POST: Buildings Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -58,7 +57,7 @@ namespace TravelPlanner2.Controllers
             return View(buildings);
         }
 
-        // GET: Buildings/Edit/5
+        // Buildings edit
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -73,7 +72,7 @@ namespace TravelPlanner2.Controllers
             return View(buildings);
         }
 
-        // POST: Buildings/Edit/5
+        // POST Buildings edit
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -89,7 +88,7 @@ namespace TravelPlanner2.Controllers
             return View(buildings);
         }
 
-        // GET: Buildings/Delete/5
+        // GET Buildings delete
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -104,7 +103,7 @@ namespace TravelPlanner2.Controllers
             return View(buildings);
         }
 
-        // POST: Buildings/Delete/5
+        // POST Buildings delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

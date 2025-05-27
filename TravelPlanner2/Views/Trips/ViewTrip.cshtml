@@ -73,7 +73,7 @@
 </div>
 <div id="tripMap" style="height: 500px; width: 100%;"></div>
 
-<!-- ✅ Afișare distanță totală -->
+<!-- Show total distance -->
 <div id="tripDistance" style="margin-top: 10px; font-weight: bold; text-align: center;">
     Total distance: calculating...
 </div>
@@ -144,7 +144,7 @@
                     });
 
                     drawRouteLine();
-                    updateTotalDistance(); // ✅ Apelează calculul distanței
+                    updateTotalDistance(); // Distance calculus
 
                     if (bounds.length > 0) {
                         tripMap.fitBounds(bounds, { padding: [50, 50] });
@@ -159,7 +159,7 @@
                     locationsList.innerHTML = '<li style="color:red">Error loading locations.</li>';
                 });
 
-            //  Calculeaza distanta in km între 2 puncte
+            //  Calculate distance between two coordinates in kilometers
             function calculateDistanceKm(lat1, lon1, lat2, lon2) {
                 const R = 6371;
                 const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -171,7 +171,7 @@
                 return R * c;
             }
 
-            //  Total distanta
+            //  Total distance
             function updateTotalDistance() {
                 let total = 0;
                 for (let i = 0; i < locations.length - 1; i++) {
@@ -251,7 +251,7 @@
                         locationsList.appendChild(li);
                     });
                     drawRouteLine();
-                    updateTotalDistance(); // ✅ Actualizează distanța după reordonare
+                    updateTotalDistance(); // Update distance after reordering
                 }
                 return false;
             }

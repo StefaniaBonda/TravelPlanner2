@@ -19,9 +19,5 @@ namespace TravelPlanner2.Models
         [StringLength(255)]
         public string ProfilePicturePath { get; set; }
 
-
-
-
-
     }
 }

@@ -50,12 +50,7 @@ namespace TravelPlanner2.Controllers
             TempData["Success"] = $"Trip \"{trip.Name}\" has been published.";
             return RedirectToAction("PendingTrips");
         }
-        // GET: Admin/ManageTrips
-        public ActionResult ManageTrips()
-        {
-            var trips = db.Trips.ToList();
-            return View(trips);
-        }
+      
 
         public ActionResult ManageUsers()
         {

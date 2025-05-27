@@ -331,7 +331,6 @@
     <Content Include="Views\Users\Profile.cshtml" />
     <Content Include="Views\SaveTrip\SaveTrip.cshtml" />
     <Content Include="Views\Admin\AdminDashboard.cshtml" />
-    <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
     <Content Include="Views\Admin\PendingTrips.cshtml" />
     <Content Include="Views\Guestt\GuestView.cshtml" />

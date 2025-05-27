@@ -159,7 +159,7 @@
                     locationsList.innerHTML = '<li style="color:red">Error loading locations.</li>';
                 });
 
-            // ✅ Calculează distanța în km între 2 puncte
+            //  Calculeaza distanta in km între 2 puncte
             function calculateDistanceKm(lat1, lon1, lat2, lon2) {
                 const R = 6371;
                 const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -171,7 +171,7 @@
                 return R * c;
             }
 
-            // ✅ Total distanță
+            //  Total distanta
             function updateTotalDistance() {
                 let total = 0;
                 for (let i = 0; i < locations.length - 1; i++) {

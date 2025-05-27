@@ -15,7 +15,7 @@ namespace TravelPlanner2.Controllers
             int? currentUserId = Session["UserId"] as int?;
             if (currentUserId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("SignIn", "Home");
             }
 
             var trips = db.Trips
@@ -98,7 +98,7 @@ namespace TravelPlanner2.Controllers
             int? currentUserId = Session["UserId"] as int?;
             if (currentUserId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("SignIn", "Home");
             }
 
             var trip = db.Trips.FirstOrDefault(t => t.Id == tripId && t.UserId == currentUserId.Value);

@@ -1,24 +1,85 @@
 ﻿@model TravelPlanner2.Models.User
 
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
     ViewBag.Title = "User Dashboard";
 }
 
-<main class="main-content">
-    <div class="hero-section">
-        <!-- Display the user's name -->
-        <h1>Welcome, @Model.Name</h1>
+<main class="main-content dashboard-container">
+    <div class="dashboard-card">
+        <h1>Welcome, @Model.Name ✈️</h1>
 
-        <p>Welcome to your personalized dashboard. Here you can manage your profile, view your trip plans, and more!</p>
+        <p>
+            Welcome to your personalized dashboard. <br />
+            Here you can manage your profile, view your trip plans, and more!
+        </p>
 
-        <!-- Links for managing user options -->
         <div class="cta-buttons">
-            <a href="/Users/Profile" class="btn btn-primary">View Profile</a>
-
-            <a href="/ViewTrips" class="btn btn-primary">View Your Trips</a>
-
-            <a href="/Trips/CreateTrip" class="btn btn-primary">Start planning a new trip</a>
+            <a href="/Users/Profile" class="btn-dashboard">👤 View Profile</a>
+            <a href="/ViewTrips" class="btn-dashboard">🧳 View Your Trips</a>
+            <a href="/Trips/CreateTrip" class="btn-dashboard">📍 Start planning a new trip</a>
         </div>
     </div>
 </main>
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #fdfaf3;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/Content/planes-bgg.png');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+    }
+
+        .dashboard-card h1 {
+            color: #0a2342;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card p {
+            color: #4a5a6a;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+    .cta-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-dashboard {
+        background-color: #4a5a6a;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-dashboard:hover {
+            background-color: #0a2342;
+        }
+</style>

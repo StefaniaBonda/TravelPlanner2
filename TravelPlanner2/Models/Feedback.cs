@@ -2,22 +2,23 @@
 using System.ComponentModel.DataAnnotations;
 using System;
 using TravelPlanner2.Models;
-
-public class Feedback
+namespace TravelPlanner2.Models
 {
-    [Key]
-    public int Id { get; set; }
+    public class Feedback
+    {
+        public int Id { get; set; }
 
-    [ForeignKey("User")]
-    public int UserId { get; set; }
-    public User User { get; set; }
+        [Required]
+        public string Name { get; set; }
 
-    [ForeignKey("Trip")]
-    public int TripId { get; set; }
-    public Trip Trip { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; }
 
-    public string Comment { get; set; }
-    public int Rating { get; set; } // 1 to 5 stars
+        [Required]
+        public string Message { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now; // Corrected initialization
+        public DateTime SubmittedAt { get; set; } = DateTime.Now;
+    }
 }
+
+

@@ -1,9 +1,23 @@
 ﻿@{
     ViewBag.Title = "View Trip";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+
 }
 @section Styles {
+   
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #fdfaf3;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('/Content/planes-bgg.png');
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
         #locationsList {
             list-style-type: none;
             padding: 0;
@@ -104,10 +118,10 @@
                         const marker = L.marker([location.Latitude, location.Longitude])
                             .addTo(tripMap)
                             .bindPopup(`
-                                        <strong>${location.Type}</strong>: ${location.Name}<br>
-                                        City: ${location.City}, Country: ${location.Country}<br>
-                                        Description: ${location.Description || 'No description'}
-                                    `);
+                                            <strong>${location.Type}</strong>: ${location.Name}<br>
+                                            City: ${location.City}, Country: ${location.Country}<br>
+                                            Description: ${location.Description || 'No description'}
+                                        `);
 
                         markers.push(marker);
 
@@ -115,9 +129,9 @@
                         li.setAttribute('draggable', 'true');
                         li.dataset.index = index;
                         li.innerHTML = `
-                                    <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
-                                    <div class="reorder-controls"><span>&#9776;</span></div>
-                                `;
+                                        <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
+                                        <div class="reorder-controls"><span>&#9776;</span></div>
+                                    `;
                         li.addEventListener('dragstart', handleDragStart);
                         li.addEventListener('dragover', handleDragOver);
                         li.addEventListener('drop', handleDrop);
@@ -225,9 +239,9 @@
                         li.setAttribute('draggable', 'true');
                         li.dataset.index = index;
                         li.innerHTML = `
-                                    <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
-                                    <div class="reorder-controls"><span>&#9776;</span></div>
-                                `;
+                                        <span>${index + 1}. ${location.Type}: ${location.Name} (${location.City}, ${location.Country})</span>
+                                        <div class="reorder-controls"><span>&#9776;</span></div>
+                                    `;
                         li.addEventListener('dragstart', handleDragStart);
                         li.addEventListener('dragover', handleDragOver);
                         li.addEventListener('drop', handleDrop);

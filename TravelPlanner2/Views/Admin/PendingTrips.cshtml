@@ -2,42 +2,152 @@
 
 @{
     ViewBag.Title = "Pending Trip Publications";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Trips Awaiting Publication</h2>
+<main class="main-content dashboard-container">
+    <div class="dashboard-card wide">
+        <h1>📝 Trips Awaiting Publication</h1>
+        <p>Review and approve the trips submitted for publishing.</p>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>UserId</th>
-            <th>Km Range</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var trip in Model)
+        @if (TempData["Success"] != null)
         {
-            <tr>
-                <td>@trip.Name</td>
-                <td>@trip.Description</td>
-                <td>@trip.UserId</td>
-                <td>@trip.kmRange</td>
-                <td>
-                    @using (Html.BeginForm("ApprovePublish", "Admin", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("tripId", trip.Id)
-                        <button type="submit" class="btn btn-success btn-sm">Publish</button>
-                    }
-                </td>
-            </tr>
+            <div class="alert-success-box">
+                ✅ @TempData["Success"]
+            </div>
         }
-    </tbody>
-</table>
+
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>User ID</th>
+                        <th>Km Range</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var trip in Model)
+                    {
+                        <tr>
+                            <td>@trip.Name</td>
+                            <td>@trip.Description</td>
+                            <td>@trip.UserId</td>
+                            <td>@trip.kmRange</td>
+                            <td>
+                                @using (Html.BeginForm("ApprovePublish", "Admin", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("tripId", trip.Id)
+                                    <button type="submit" class="btn-action publish">🚀 Publish</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #fdfaf3;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/Content/planes-bgg.png');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 50px 20px;
+        min-height: 100vh;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        text-align: center;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+        .dashboard-card.wide {
+            text-align: left;
+        }
+
+        .dashboard-card h1 {
+            color: #0a2342;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card p {
+            color: #4a5a6a;
+            margin-bottom: 30px;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1em;
+        min-width: 400px;
+    }
+
+        .styled-table thead {
+            background-color: #0a2342;
+            color: #ffffff;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+    .btn-action.publish {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-action.publish:hover {
+            background-color: #218838;
+        }
+
+    .alert-success-box {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 12px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        border: 1px solid #c3e6cb;
+    }
+</style>

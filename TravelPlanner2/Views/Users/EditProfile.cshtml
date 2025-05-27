@@ -1,11 +1,11 @@
 ﻿@model TravelPlanner2.Models.User
 @{
     ViewBag.Title = "Edit Profile";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     var avatars = ViewBag.AvatarOptions as List<string> ?? new List<string>();
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
 }
 
-<h2>Edit Your Profile</h2>
+<h2 class="mb-4">Edit Your Profile</h2>
 
 @using (Html.BeginForm("EditProfile", "Users", FormMethod.Post))
 {
@@ -15,38 +15,38 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.Role)
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         @Html.LabelFor(m => m.Name)
         @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         @Html.LabelFor(m => m.Email)
         @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         @Html.Label("Current Password")
         <input type="password" name="CurrentPassword" class="form-control" />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         @Html.LabelFor(m => m.Password, "New Password")
         @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
     </div>
 
-    <div class="form-group">
-        <label>Choose Profile Picture</label>
-        <div class="d-flex flex-wrap">
+    <div class="form-group mb-4">
+        <label class="d-block mb-2">Choose Profile Picture</label>
+        <div class="avatar-grid">
             @foreach (var avatar in avatars)
             {
-                <div class="m-2 text-center">
+                <div class="avatar-item">
                     <input type="radio" name="SelectedAvatar" value="@avatar" id="avatar_@Path.GetFileNameWithoutExtension(avatar)" @(Model.ProfilePicturePath == avatar ? "checked" : "") />
                     <label for="avatar_@Path.GetFileNameWithoutExtension(avatar)">
-                        <img src="@Url.Content(avatar)" alt="Avatar" width="80" height="80" class="rounded-circle" />
+                        <img src="@Url.Content(avatar)" alt="Avatar" class="avatar-img" />
                     </label>
                 </div>
             }
@@ -55,4 +55,45 @@
 
     <button type="submit" class="btn btn-success">Save Changes</button>
     <a href="@Url.Action("Profile", "Users")" class="btn btn-secondary">Cancel</a>
+}
+
+@section Styles {
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #fdfaf3;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('/Content/planes-bgg.png');
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
+
+        .avatar-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .avatar-item {
+            text-align: center;
+            flex: 0 0 auto;
+            width: 100px;
+        }
+
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            transition: border 0.3s ease;
+        }
+
+        input[type="radio"]:checked + label .avatar-img {
+            border-color: #28a745;
+        }
+    </style>
 }

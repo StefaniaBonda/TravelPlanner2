@@ -1,5 +1,5 @@
 ﻿@*
-    Layout principal pentru aplicația TripTide
+    Layout pentru paginile unde userul este logat in aplicație
 *@
 <!DOCTYPE html>
 <html lang="ro">
@@ -24,9 +24,9 @@
 
         <nav class="main-nav">
             <ul>
-                <li><a href="@Url.Action("SignIn", "Home")">Log in</a></li>
-                <li><a href="@Url.Action("SignUp", "Home")">Sign up</a></li>
-                <li><a href="@Url.Action("About", "Home")">About</a></li>             
+                <li><a href="@Url.Action("About", "Home")">About</a></li>
+                <li><a href="@Url.Action("UserDashboard", "Home")">Back to dashboard</a></li>
+                <li><a href="@Url.Action("Index", "Home")">Log out</a></li>
             </ul>
         </nav>
     </header>

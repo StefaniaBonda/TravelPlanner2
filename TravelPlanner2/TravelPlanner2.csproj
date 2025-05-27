@@ -166,6 +166,7 @@
     <Compile Include="Controllers\ConnectionNaturesController.cs" />
     <Compile Include="Controllers\CulinariesController.cs" />
     <Compile Include="Controllers\CulturalsController.cs" />
+    <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GuesttController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NaturesController.cs" />
@@ -184,6 +185,14 @@
     <Compile Include="Migrations\202505262109575_AddPublishedDateToTrip.Designer.cs">
       <DependentUpon>202505262109575_AddPublishedDateToTrip.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505271007459_NewFeedback.cs" />
+    <Compile Include="Migrations\202505271007459_NewFeedback.Designer.cs">
+      <DependentUpon>202505271007459_NewFeedback.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202505271018331_FeedbackClassCorrect.cs" />
+    <Compile Include="Migrations\202505271018331_FeedbackClassCorrect.Designer.cs">
+      <DependentUpon>202505271018331_FeedbackClassCorrect.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Buildings.cs" />
     <Compile Include="Models\ConnectionBuildings.cs" />
@@ -192,7 +201,6 @@
     <Compile Include="Models\ConnectionNature.cs" />
     <Compile Include="Models\Culinary.cs" />
     <Compile Include="Models\Cultural.cs" />
-    <Compile Include="Models\Favorite.cs" />
     <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\MyDBContext.cs" />
@@ -323,11 +331,14 @@
     <Content Include="Views\Users\Profile.cshtml" />
     <Content Include="Views\SaveTrip\SaveTrip.cshtml" />
     <Content Include="Views\Admin\AdminDashboard.cshtml" />
-    <Content Include="Views\Admin\ManageTrips.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\ViewTrips\Index.cshtml" />
     <Content Include="Views\Admin\PendingTrips.cshtml" />
     <Content Include="Views\Guestt\GuestView.cshtml" />
+    <Content Include="Views\Shared\LoggedInLayout.cshtml" />
+    <Content Include="Views\Shared\AdminLayout.cshtml" />
+    <Content Include="Views\Shared\AboutLayout.cshtml" />
+    <Content Include="Views\Feedback\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -365,6 +376,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505262109575_AddPublishedDateToTrip.resx">
       <DependentUpon>202505262109575_AddPublishedDateToTrip.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505271007459_NewFeedback.resx">
+      <DependentUpon>202505271007459_NewFeedback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505271018331_FeedbackClassCorrect.resx">
+      <DependentUpon>202505271018331_FeedbackClassCorrect.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

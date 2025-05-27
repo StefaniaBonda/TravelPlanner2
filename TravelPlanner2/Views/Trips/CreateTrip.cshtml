@@ -1,9 +1,23 @@
 ﻿@{
     ViewBag.Title = "Create Trip";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
 }
 
 @section Styles {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #fdfaf3;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('/Content/planes-bgg.png');
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
+    </style>
 }
 
 <div class="main-layout">
@@ -245,5 +259,5 @@
             transform: scale(1.2);
             accent-color: var(--secondary-color);
         }
-    </style>
+        </style>
 } @* End of Scripts *@

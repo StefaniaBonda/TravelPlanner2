@@ -27,7 +27,7 @@ namespace TravelPlanner2.Controllers
             int? currentUserId = Session["UserId"] as int?;
             if (currentUserId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("SignImn", "Home");
             }
 
             var trip = db.Trips.Find(tripId);
@@ -39,7 +39,7 @@ namespace TravelPlanner2.Controllers
             // Always recalculate kmRange before showing
             UpdateTripDistance(trip.Id);
 
-            bool isFavorited = db.Favorites.Any(f => f.UserId == currentUserId.Value && f.TripId == trip.Id);
+            
 
             var viewModel = new SaveTripViewModel
             {
@@ -47,7 +47,7 @@ namespace TravelPlanner2.Controllers
                 TripId = trip.Id,
                 Name = trip.Name,
                 Description = trip.Description,
-                IsFavorite = isFavorited,
+                
             };
 
             return View(viewModel);
@@ -84,26 +84,8 @@ namespace TravelPlanner2.Controllers
             trip.Description = model.Description;
             // trip.kmRange is up-to-date
 
-            var existingFavorite = db.Favorites.FirstOrDefault(f => f.UserId == currentUserId.Value && f.TripId == trip.Id);
-            if (model.IsFavorite)
-            {
-                if (existingFavorite == null)
-                {
-                    var newFavorite = new Favorite
-                    {
-                        UserId = currentUserId.Value,
-                        TripId = trip.Id
-                    };
-                    db.Favorites.Add(newFavorite);
-                }
-            }
-            else
-            {
-                if (existingFavorite != null)
-                {
-                    db.Favorites.Remove(existingFavorite);
-                }
-            }
+           
+          
 
             db.Entry(trip).State = EntityState.Modified;
             db.SaveChanges();

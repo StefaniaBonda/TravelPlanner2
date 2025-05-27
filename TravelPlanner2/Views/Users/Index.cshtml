@@ -1,51 +1,179 @@
 ﻿@model IEnumerable<TravelPlanner2.Models.User>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Users Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<main class="main-content dashboard-container">
+    <div class="dashboard-card wide">
+        <h1>👤 Users List</h1>
+        <p>Browse all users in the system. You can view, edit, or delete their profiles.</p>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Password)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Role)
-        </th>
-        <th></th>
-    </tr>
+        <div class="mb-3">
+            <a href="@Url.Action("Create", "Users")" class="btn-action create">➕ Create New User</a>
+        </div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Password)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Role)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Password)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Role)</th>
+                        <th style="width: 200px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Email</td>
+                            <td>@item.Password</td>
+                            <td>@item.Role</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("Edit", "Users", new { id = item.Id })" class="btn-action edit">✏️ Edit</a>
+                                    <a href="@Url.Action("Details", "Users", new { id = item.Id })" class="btn-action details">🔍 Details</a>
+                                    <a href="@Url.Action("Delete", "Users", new { id = item.Id })" class="btn-action delete">🗑️ Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 
-</table>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #fdfaf3;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/Content/planes-bgg.png');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 50px 20px;
+        min-height: 100vh;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        text-align: center;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+        .dashboard-card.wide {
+            text-align: left;
+        }
+
+        .dashboard-card h1 {
+            color: #0a2342;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card p {
+            color: #4a5a6a;
+            margin-bottom: 30px;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1em;
+        min-width: 400px;
+    }
+
+        .styled-table thead {
+            background-color: #0a2342;
+            color: #ffffff;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        color: white;
+        white-space: nowrap;
+    }
+
+        .btn-action.edit {
+            background-color: #f0ad4e;
+        }
+
+            .btn-action.edit:hover {
+                background-color: #ec971f;
+            }
+
+        .btn-action.details {
+            background-color: #5bc0de;
+        }
+
+            .btn-action.details:hover {
+                background-color: #31b0d5;
+            }
+
+        .btn-action.delete {
+            background-color: #d9534f;
+        }
+
+            .btn-action.delete:hover {
+                background-color: #c9302c;
+            }
+
+        .btn-action.create {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-action.create:hover {
+                background-color: #4cae4c;
+            }
+</style>

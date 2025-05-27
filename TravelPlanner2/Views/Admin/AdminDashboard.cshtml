@@ -4,12 +4,80 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Admin Panel</h2>
+<main class="main-content dashboard-container">
+    <div class="dashboard-card">
+        <h1>Welcome to the Admin Panel 🛠️</h1>
 
-<div class="mb-3">
-    <a href="@Url.Action("PendingTrips", "Admin")" class="btn btn-primary">View Publish Requests</a>
-    <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-secondary">Manage Users</a>
-    <a href="@Url.Action("ManageTrips", "Admin")" class="btn btn-success">Manage Trips</a>
-</div>
+        <p>
+            Here you can manage all aspects of the platform: user accounts, trip approvals, and published content.
+        </p>
 
+        <div class="cta-buttons">
+            <a href="@Url.Action("PendingTrips", "Admin")" class="btn-dashboard">📄 View Publish Requests</a>
+            <a href="@Url.Action("Index", "Users")" class="btn-dashboard">👥 Manage Users</a>
+            <a href="@Url.Action("Profile", "Users")" class="btn-dashboard">🧑‍💼 View your profile</a>
+        </div>
+    </div>
+</main>
 
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #fdfaf3;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/Content/planes-bgg.png');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
+    }
+
+    .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+    }
+
+        .dashboard-card h1 {
+            color: #0a2342;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card p {
+            color: #4a5a6a;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+    .cta-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-dashboard {
+        background-color: #4a5a6a;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-dashboard:hover {
+            background-color: #0a2342;
+        }
+</style>

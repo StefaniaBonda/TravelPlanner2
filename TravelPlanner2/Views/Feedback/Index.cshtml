@@ -1,0 +1,127 @@
+﻿@model IEnumerable<TravelPlanner2.Models.Feedback>
+@{
+    ViewBag.Title = "User Feedback";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+}
+
+<div class="feedback-page">
+    <div class="overlay">
+        <div class="feedback-wrapper py-5 px-4">
+            <h2 class="text-center mb-5 fw-semibold">User Feedback ✈️</h2>
+
+            <div class="feedback-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="card shadow-sm feedback-card">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary">@item.Name</h5>
+                            <p class="card-text flex-grow-1 text-secondary">@item.Message</p>
+                            <small class="text-muted text-end">@item.SubmittedAt.ToString("g")</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #fdfaf3;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/Content/planes-bgg.png');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
+    }
+
+    .feedback-page {
+        min-height: 100vh;
+        background-image: url('https://images.unsplash.com/photo-1518552987719-30b3e7171d3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .overlay {
+        background-color: rgba(255, 255, 255, 0.95);
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .feedback-wrapper {
+        max-width: 1600px;
+        width: 100%;
+    }
+
+    h2 {
+        color: #222;
+        font-weight: 600;
+        font-size: 2.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .feedback-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2rem;
+        padding: 0 2rem;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        height: 100%;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #007bff;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        flex-grow: 1;
+        color: #555;
+        white-space: pre-wrap;
+        margin-bottom: 1rem;
+    }
+
+    small.text-muted {
+        font-size: 0.85rem;
+        color: #888;
+        text-align: right;
+        align-self: flex-end;
+    }
+
+    @@media (max-width: 768px) {
+        .feedback-grid {
+            grid-template-columns: 1fr;
+            padding: 0 1rem;
+        }
+    }
+    </style>
+}

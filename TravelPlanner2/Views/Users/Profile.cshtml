@@ -2,11 +2,22 @@
 
 @{
     ViewBag.Title = "Your Profile";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
 }
 
 @section Styles {
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #fdfaf3;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('/Content/planes-bgg.png');
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
         .profile-card {
             background-color: #fdfaf3;
             border-radius: 15px;
@@ -61,5 +72,5 @@
     }
 
     <a href="@Url.Action("EditProfile", "Users")" class="btn btn-custom">Edit Profile</a>
-    <a href="/Account/Logout" class="btn btn-outline-danger">Log out</a>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-danger">Log out</a>
 </div>
